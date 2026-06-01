@@ -19,10 +19,16 @@
       </div>
     </nav>
     <main class="page-shell">
-      <section class="page-hero">
-        <p class="eyebrow">Dataset</p>
-        <h1>資料集</h1>
-        <p>資料集採可信來源導向的安全改寫策略，提供模型 prototype 與介面展示使用。</p>
+      <section class="page-hero hero-grid">
+        <div>
+          <p class="eyebrow">Dataset Design</p>
+          <h1>資料集設計</h1>
+          <p>本資料集用於建立可疑信件分析 prototype，採用可信來源導向的安全改寫案例，避免保存真實釣魚連結、真實個資或可疑附件。</p>
+        </div>
+        <article class="info-card highlight-card">
+          <h2>資料安全原則</h2>
+          <p>資料內容以教學展示與模型 prototype 為目標，不作為原始威脅情資。</p>
+        </article>
       </section>
 
       <section class="stat-grid">
@@ -30,33 +36,97 @@
         <article class="stat-card"><span>phishing</span><strong>98</strong></article>
         <article class="stat-card"><span>normal</span><strong>48</strong></article>
         <article class="stat-card"><span>phishing_type</span><strong>10 類</strong></article>
+        <article class="stat-card"><span>圖片案例索引</span><strong>36</strong></article>
+        <article class="stat-card wide"><span>來源類型</span><strong>7 類</strong><p>security_vendor、government、taiwan_education、official_security_education、taiwan_government、threat_intel、bank_official</p></article>
       </section>
 
-      <section class="content-grid">
-        <article class="info-card">
-          <h2>資料來源</h2>
-          <div class="pill-list">
-            <span class="pill">Microsoft Security</span><span class="pill">FTC</span><span class="pill">Kaspersky</span><span class="pill">Trend Micro</span><span class="pill">Fortinet</span><span class="pill">Cisco Talos</span><span class="pill">OpenPhish</span><span class="pill">Cofense</span><span class="pill">Docusign</span><span class="pill">台灣教育單位</span><span class="pill">台灣政府 / 銀行防詐資訊</span>
-          </div>
-        </article>
-        <article class="info-card">
-          <h2>資料安全策略</h2>
-          <ul class="clean-list">
-            <li>不保存真實釣魚連結</li>
-            <li>不保存真實個資</li>
-            <li>不下載可疑附件</li>
-            <li>不重新散布真實釣魚信全文</li>
-            <li>使用可信來源導向的安全改寫案例</li>
-          </ul>
-        </article>
-      </section>
-
-      <section class="info-card">
-        <h2>text_cases.csv 主要欄位</h2>
-        <div class="field-grid">
-          <span>email_subject</span><span>email_content</span><span>sender</span><span>sender_domain</span><span>has_link</span><span>has_attachment</span><span>urgency_level</span><span>suspicious_keywords</span><span>phishing_type</span><span>risk_label</span><span>explanation</span>
+      <section class="section-block">
+        <div class="section-title">
+          <p class="eyebrow">Distribution</p>
+          <h2>類別分布</h2>
+        </div>
+        <div class="dataset-table">
+          <div class="table-row table-head"><span>類別名稱</span><span>筆數</span><span>常見風險描述</span></div>
+          <div class="table-row"><span>account_lock</span><strong>14</strong><p>利用帳號停用、異常登入或驗證要求製造壓力。</p></div>
+          <div class="table-row"><span>fake_delivery</span><strong>14</strong><p>冒充物流通知，要求更新地址、補繳運費或重新配送。</p></div>
+          <div class="table-row"><span>invoice_attachment</span><strong>14</strong><p>用發票、帳單或付款文件誘導開啟附件。</p></div>
+          <div class="table-row"><span>fake_prize</span><strong>14</strong><p>以中獎或獎勵為誘因，要求個資或手續費。</p></div>
+          <div class="table-row"><span>refund_or_payment</span><strong>14</strong><p>假冒退款、訂閱或付款失敗通知，誘導更新金融資料。</p></div>
+          <div class="table-row"><span>qr_phishing</span><strong>14</strong><p>將風險連結藏在 QR code 中，降低網址檢查機會。</p></div>
+          <div class="table-row"><span>document_signing</span><strong>14</strong><p>偽裝文件簽署或共享文件，誘導登入偽造入口。</p></div>
+          <div class="table-row"><span>legitimate_it_maintenance</span><strong>16</strong><p>正常系統維護通知，用於降低誤判。</p></div>
+          <div class="table-row"><span>legitimate_delivery_notice</span><strong>16</strong><p>正常出貨與配送通知，用於建立對照組。</p></div>
+          <div class="table-row"><span>legitimate_security_notice</span><strong>16</strong><p>正常安全提醒，不要求輸入帳密或付款。</p></div>
         </div>
       </section>
+
+      <section class="section-block">
+        <div class="section-title">
+          <p class="eyebrow">Sources</p>
+          <h2>資料來源</h2>
+        </div>
+        <div class="source-grid">
+          <article class="info-card"><h3>Microsoft Security</h3><p><strong>source_type：</strong>security_vendor</p><p>提供釣魚信件常見風險與安全教育脈絡。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>FTC</h3><p><strong>source_type：</strong>government</p><p>用於假物流、假中獎與政府冒充詐騙情境。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Kaspersky</h3><p><strong>source_type：</strong>security_vendor</p><p>參考 phishing email 與帳號安全警示型態。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Trend Micro</h3><p><strong>source_type：</strong>security_vendor</p><p>參考 scam email 與一般使用者防護建議。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Fortinet</h3><p><strong>source_type：</strong>security_vendor</p><p>參考發票、附件與商務流程誘導案例。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Cisco Talos</h3><p><strong>source_type：</strong>security_vendor</p><p>參考文件、附件與憑證竊取攻擊脈絡。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>OpenPhish</h3><p><strong>source_type：</strong>threat_intel</p><p>作為 phishing threat intelligence 背景，不保存真實惡意網址。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Cofense</h3><p><strong>source_type：</strong>security_vendor</p><p>參考 QR code phishing 與 credential harvesting 型態。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>Docusign</h3><p><strong>source_type：</strong>official_security_education</p><p>參考文件簽署與品牌冒充防護說明。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>台灣教育單位</h3><p><strong>source_type：</strong>taiwan_education</p><p>補強校園 IT、信箱維護與繁體中文情境。</p><span class="pill">可信來源</span></article>
+          <article class="info-card"><h3>台灣政府 / 銀行防詐資訊</h3><p><strong>source_type：</strong>taiwan_government / bank_official</p><p>補強本土假政府、假銀行與防詐提醒。</p><span class="pill">可信來源</span></article>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-title">
+          <p class="eyebrow">Fields</p>
+          <h2>欄位說明</h2>
+        </div>
+        <div class="dataset-table">
+          <div class="table-row table-head"><span>欄位</span><span>用途</span><span>白話說明</span></div>
+          <div class="table-row"><span>id</span><strong>識別碼</strong><p>每一筆案例的編號。</p></div>
+          <div class="table-row"><span>email_subject</span><strong>信件主旨</strong><p>使用者看到的主旨文字。</p></div>
+          <div class="table-row"><span>email_content</span><strong>信件內容</strong><p>去識別化與安全改寫後的信件本文。</p></div>
+          <div class="table-row"><span>sender</span><strong>寄件者名稱</strong><p>信件顯示的寄件者。</p></div>
+          <div class="table-row"><span>sender_domain</span><strong>寄件網域</strong><p>用來觀察是否有可疑或仿冒網域。</p></div>
+          <div class="table-row"><span>has_link</span><strong>連結誘導</strong><p>是否要求點擊連結或前往外部頁面。</p></div>
+          <div class="table-row"><span>has_attachment</span><strong>附件誘導</strong><p>是否要求開啟附件或文件。</p></div>
+          <div class="table-row"><span>urgency_level</span><strong>急迫程度</strong><p>信件是否使用時間壓力或威脅語氣。</p></div>
+          <div class="table-row"><span>suspicious_keywords</span><strong>可疑關鍵字</strong><p>信件中常見的可疑提示詞。</p></div>
+          <div class="table-row"><span>phishing_type</span><strong>細分類</strong><p>標示假物流、帳號鎖定、QR 釣魚等類型。</p></div>
+          <div class="table-row"><span>risk_label</span><strong>風險標籤</strong><p>標示 phishing 或 normal。</p></div>
+          <div class="table-row"><span>explanation</span><strong>白話說明</strong><p>給一般使用者理解的原因。</p></div>
+          <div class="table-row"><span>source_url</span><strong>來源網址</strong><p>此案例參考的可信來源。</p></div>
+          <div class="table-row"><span>source_type</span><strong>來源類型</strong><p>例如政府、資安廠商、教育單位或銀行官方。</p></div>
+        </div>
+      </section>
+
+      <section class="warning-card">
+        <h2>資料安全策略</h2>
+        <ul class="clean-list">
+          <li>不保存真實釣魚連結</li>
+          <li>不保存真實個資</li>
+          <li>不下載可疑附件</li>
+          <li>不重新散布真實釣魚信全文</li>
+          <li>使用可信來源導向的安全改寫案例</li>
+          <li>本資料集適合教學展示與 prototype，不應視為原始威脅情資</li>
+        </ul>
+      </section>
     </main>
+    <footer class="footer">
+      <div>
+        <strong>看懂可疑信件</strong>
+        <p>本專案僅供期末專題展示與輔助判斷，不應作為資安、法律或金融決策的唯一依據。</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/smallweiweihsu/genai-final-anti-scam">GitHub repo</a>
+        <a href="./dataset.html">Dataset</a>
+        <a href="./workflow.html">系統流程</a>
+        <a href="./model.html">模型說明</a>
+      </div>
+    </footer>
   </body>
 </html>

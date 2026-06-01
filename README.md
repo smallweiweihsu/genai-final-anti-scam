@@ -36,7 +36,7 @@ genai-final-anti-scam/
 - `web/model.html`：模型說明頁，整理任務、API 輸出與評估指標。
 - `web/dataset.html`：資料集頁，說明資料數量、來源與安全策略。
 
-網站採白底學術展示風格，使用深綠 / 墨綠作為主色，導覽列、卡片與按鈕都有平滑 hover interaction。
+網站設計參考資料集展示網站的資訊架構，採用產品式 landing page、統計卡、資料表、欄位說明與卡片式內容呈現。整體為白底學術展示風格，使用深綠 / 墨綠作為主色，導覽列、卡片、CTA 與按鈕都有平滑 hover interaction。
 
 ## Dataset
 
@@ -58,6 +58,7 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 
 ## Web Demo 介面功能
 
+- 首頁包含 hero、CTA、功能卡與分析 Demo，老師打開後可以直接操作。
 - 文字 / 圖片雙模式輸入：使用 tab 在「文字信件」與「圖片截圖」之間切換，避免兩種輸入同時攤開。
 - 範例案例載入：可使用下拉選單或快速範例按鈕載入 dataset 代表案例。
 - 使用者自訂信件分析：可貼上任意 Email 主旨、寄件者與內文進行 prototype 分析。
@@ -68,6 +69,17 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 - 安全行動 checklist：把 safe_actions 轉成 checklist 樣式，方便展示可執行建議。
 - 圖片上傳 mock 展示：可預覽圖片，按下分析圖片後顯示展示用結果。
 - 圖片功能目前為 mock 展示，未來可串接 OCR / 多模態模型讀取截圖文字與畫面特徵。
+
+## Dataset 展示頁
+
+`web/dataset.html` 是資料集說明主頁，包含：
+
+- 資料集 hero 與安全改寫策略說明。
+- 文字案例、phishing、normal、phishing_type、圖片案例索引與來源類型統計。
+- phishing_type 類別分布與常見風險描述。
+- Microsoft Security、FTC、Kaspersky、Trend Micro、Fortinet、Cisco Talos、OpenPhish、Cofense、Docusign、台灣教育單位、台灣政府 / 銀行防詐資訊等來源卡。
+- `text_cases.csv` 欄位說明表。
+- 資料安全策略提示卡。
 
 ## risk_score 與 confidence_score
 

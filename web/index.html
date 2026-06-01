@@ -19,24 +19,54 @@
       </div>
     </nav>
     <main class="app-shell">
-      <section class="hero">
+      <section class="hero hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">生成式 AI 輔助一般使用者辨識釣魚郵件</p>
           <h1>看懂可疑信件</h1>
-          <p class="hero-subtitle">貼上信件或上傳截圖，系統會用白話方式提示可疑特徵、詐騙話術與安全行動。</p>
-          <div class="feature-chips" aria-label="功能摘要">
-            <span>文字信件分析</span>
-            <span>風險白話解釋</span>
-            <span>圖片 mock 展示</span>
+          <p class="hero-subtitle">貼上信件或上傳截圖，系統會用白話方式提示可疑特徵、詐騙話術、風險分數與安全行動。</p>
+          <div class="hero-actions">
+            <a class="cta-button" href="#analyzer">開始分析</a>
+            <a class="cta-button secondary" href="./dataset.html">查看資料集</a>
           </div>
+          <p class="mode-inline">目前模式：Rule-based prototype。未來模式：模型 API / OCR / 多模態模型。</p>
         </div>
-        <div class="mode-panel" aria-label="目前模式">
-          <span>目前模式：Rule-based prototype</span>
-          <span>未來模式：模型 API</span>
+        <div class="preview-card" aria-label="分析結果預覽">
+          <div class="preview-header">
+            <span class="badge high">高風險</span>
+            <strong>風險分數 82%</strong>
+          </div>
+          <div class="confidence-row compact">
+            <span>判斷信心</span>
+            <strong>91%</strong>
+          </div>
+          <div class="tag-list preview-tags">
+            <span class="tag indicator">急迫語氣</span>
+            <span class="tag indicator">要求登入</span>
+            <span class="tag method">冒充官方通知</span>
+          </div>
+          <div class="check-list preview-checks">
+            <div class="check-item"><span aria-hidden="true"></span><p>不要點擊信件中的連結</p></div>
+            <div class="check-item"><span aria-hidden="true"></span><p>改從官方 App 或網站查證</p></div>
+          </div>
         </div>
       </section>
 
-      <section class="workspace">
+      <section class="feature-grid" aria-label="功能特色">
+        <article class="interactive-card">
+          <h2>可疑信件分析</h2>
+          <p>使用者可以貼上 Email 主旨、寄件者與內文，系統會判斷是否疑似釣魚或詐騙信件。</p>
+        </article>
+        <article class="interactive-card">
+          <h2>白話風險解釋</h2>
+          <p>不只輸出 phishing / normal，而是將可疑特徵、詐騙話術、個資風險與付款風險轉成一般使用者能理解的說明。</p>
+        </article>
+        <article class="interactive-card">
+          <h2>安全行動建議</h2>
+          <p>系統提供 checklist，例如不要點擊連結、不要輸入帳密、改從官方 App 或網站查證。</p>
+        </article>
+      </section>
+
+      <section id="analyzer" class="workspace analyzer-section">
         <div class="input-panel">
           <div class="input-tabs" role="tablist" aria-label="輸入模式">
             <button id="textModeTab" type="button" class="tab-button active" data-mode="text" role="tab" aria-selected="true">文字信件</button>
@@ -168,6 +198,19 @@
         </div>
       </section>
     </main>
+
+    <footer class="footer">
+      <div>
+        <strong>看懂可疑信件</strong>
+        <p>本專案僅供期末專題展示與輔助判斷，不應作為資安、法律或金融決策的唯一依據。</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com/smallweiweihsu/genai-final-anti-scam">GitHub repo</a>
+        <a href="./dataset.html">Dataset</a>
+        <a href="./workflow.html">系統流程</a>
+        <a href="./model.html">模型說明</a>
+      </div>
+    </footer>
 
     <script type="module" src="./script.js?v=20260601-risk-score"></script>
   </body>
