@@ -36,7 +36,7 @@ genai-final-anti-scam/
 - `web/model.html`：模型說明頁，整理任務、API 輸出與評估指標。
 - `web/dataset.html`：資料集頁，說明資料數量、來源與安全策略。
 
-網站設計參考資料集展示網站的資訊架構，採用產品式 landing page、統計卡、資料表、欄位說明與卡片式內容呈現。整體為白底學術展示風格，使用深綠 / 墨綠作為主色，導覽列、卡片、CTA 與按鈕都有平滑 hover interaction。
+網站設計採用深色 Cyber-Security Prism 風格，以 `#070A12` 深色背景、紫色 AI 強調色、玻璃感卡片、風險分數條與安全 checklist 呈現。整體保留產品式 landing page、統計卡、資料表、欄位說明與卡片式內容，適合期末專題現場展示。
 
 ## Dataset
 
@@ -59,6 +59,7 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 ## Web Demo 介面功能
 
 - 首頁包含 hero、CTA、功能卡與分析 Demo，老師打開後可以直接操作。
+- 深色資安展示風格：全站共用 dark UI、sticky navigation、hover glow、清楚 focus state 與 responsive layout。
 - 文字 / 圖片雙模式輸入：使用 tab 在「文字信件」與「圖片截圖」之間切換，避免兩種輸入同時攤開。
 - 範例案例載入：可使用下拉選單或快速範例按鈕載入 dataset 代表案例。
 - 使用者自訂信件分析：可貼上任意 Email 主旨、寄件者與內文進行 prototype 分析。
@@ -80,6 +81,13 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 - Microsoft Security、FTC、Kaspersky、Trend Micro、Fortinet、Cisco Talos、OpenPhish、Cofense、Docusign、台灣教育單位、台灣政府 / 銀行防詐資訊等來源卡。
 - `text_cases.csv` 欄位說明表。
 - 資料安全策略提示卡。
+
+## 視覺設計系統
+
+- 色彩：深色背景 `#070A12`、卡片 `#111827`、主色 `#7C3AED`、輔助藍 `#1E3A8A`、高 / 中 / 低風險分別使用紅、黃、綠。
+- 版面：首頁維持左側說明與右側風險預覽，分析 Demo 使用左右雙欄，手機版自動改為上下排列。
+- 元件：導覽列、CTA、tab、dropzone、資料表、統計卡、流程卡與 footer 共用同一套深色樣式。
+- 動效：卡片 hover 會有輕微上浮與紫色 glow，按鈕有 press feedback；若使用者偏好減少動態，CSS 會降低 transition。
 
 ## risk_score 與 confidence_score
 
