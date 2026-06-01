@@ -7,11 +7,15 @@ const analyzeButton = document.querySelector("#analyzeButton");
 const clearButton = document.querySelector("#clearButton");
 const imageInput = document.querySelector("#imageInput");
 const imagePreview = document.querySelector("#imagePreview");
+const quickButtons = document.querySelectorAll(".quick-button");
 
 const riskTitle = document.querySelector("#riskTitle");
 const riskBadge = document.querySelector("#riskBadge");
+const riskLevelText = document.querySelector("#riskLevelText");
 const phishingStatus = document.querySelector("#phishingStatus");
 const confidenceScore = document.querySelector("#confidenceScore");
+const riskProgress = document.querySelector("#riskProgress");
+const reasonSummary = document.querySelector("#reasonSummary");
 const modelSource = document.querySelector("#modelSource");
 const indicatorsList = document.querySelector("#indicatorsList");
 const methodsList = document.querySelector("#methodsList");
@@ -23,15 +27,6 @@ const disclaimer = document.querySelector("#disclaimer");
 
 const textSamples = mockSamples.filter((sample) => sample.inputType === "text");
 const imageSample = mockSamples.find((sample) => sample.inputType === "image");
-
-function renderList(element, items) {
-  element.innerHTML = "";
-  items.forEach((item) => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    element.appendChild(li);
-  });
-}
 
 function riskLabel(level) {
   if (level === "high") return "高風險";
@@ -46,16 +41,48 @@ function riskTitleText(result) {
   return "目前風險較低";
 }
 
+function reasonText(level) {
+  if (level === "high") return "此信件出現多個高風險訊號，建議不要直接操作。";
+  if (level === "medium") return "此信件有可疑訊號，建議先查證。";
+  return "目前未看到明顯高風險訊號，但仍建議透過官方管道確認。";
+}
+
+function renderTags(element, items, className) {
+  element.innerHTML = "";
+  items.forEach((item) => {
+    const span = document.createElement("span");
+    span.className = `tag ${className}`;
+    span.textContent = item;
+    element.appendChild(span);
+  });
+}
+
+function renderChecklist(element, items) {
+  element.innerHTML = "";
+  items.forEach((item) => {
+    const row = document.createElement("div");
+    row.className = "check-item";
+    row.innerHTML = `<span aria-hidden="true"></span><p></p>`;
+    row.querySelector("p").textContent = item;
+    element.appendChild(row);
+  });
+}
+
 function renderResult(result) {
+  const percent = Math.round(result.confidence_score * 100);
   riskTitle.textContent = riskTitleText(result);
   riskBadge.textContent = riskLabel(result.risk_level);
   riskBadge.className = `badge ${result.risk_level}`;
+  riskLevelText.textContent = riskLabel(result.risk_level);
   phishingStatus.textContent = result.is_phishing ? "是，建議不要直接操作" : "目前不像";
-  confidenceScore.textContent = `${Math.round(result.confidence_score * 100)}%`;
+  confidenceScore.textContent = `${percent}%`;
+  riskProgress.style.width = `${percent}%`;
+  riskProgress.className = `progress-fill ${result.risk_level}`;
+  reasonSummary.textContent = reasonText(result.risk_level);
   modelSource.textContent = result.model_source || "Rule-based prototype";
-  renderList(indicatorsList, result.indicators);
-  renderList(methodsList, result.manipulation_methods);
-  renderList(actionsList, result.safe_actions);
+  renderTags(indicatorsList, result.indicators, "indicator");
+  renderTags(methodsList, result.manipulation_methods, "method");
+  renderChecklist(actionsList, result.safe_actions);
   personalRisk.textContent = result.personal_data_risk;
   paymentRisk.textContent = result.payment_risk;
   explanation.textContent = result.explanation_for_general_users;
@@ -76,11 +103,25 @@ function loadSample(index) {
   const sample = textSamples[index];
   if (!sample) return;
   messageInput.value = sample.text;
+  sampleSelect.value = String(index);
   renderResult(sample.result);
+}
+
+function loadByType(type) {
+  const index = textSamples.findIndex((sample) => sample.phishingType === type);
+  if (index >= 0) {
+    loadSample(index);
+  }
 }
 
 sampleSelect.addEventListener("change", () => {
   loadSample(Number(sampleSelect.value));
+});
+
+quickButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    loadByType(button.dataset.type);
+  });
 });
 
 analyzeButton.addEventListener("click", () => {
@@ -95,6 +136,8 @@ analyzeButton.addEventListener("click", () => {
 clearButton.addEventListener("click", () => {
   messageInput.value = "";
   sampleSelect.selectedIndex = 0;
+  imageInput.value = "";
+  imagePreview.textContent = "尚未選擇圖片";
   messageInput.focus();
 });
 

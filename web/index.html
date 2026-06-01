@@ -8,23 +8,65 @@
   </head>
   <body>
     <main class="app-shell">
-      <section class="topbar">
-        <div>
+      <section class="hero">
+        <div class="hero-copy">
           <p class="eyebrow">生成式 AI 輔助一般使用者辨識釣魚郵件</p>
           <h1>看懂可疑信件</h1>
+          <p class="hero-subtitle">貼上信件內容，系統會用白話方式標示可疑特徵、詐騙話術與安全行動。</p>
         </div>
-        <div class="prototype-badge">Prototype 分析</div>
+        <div class="mode-panel" aria-label="目前模式">
+          <span>目前模式：Rule-based prototype</span>
+          <span>未來模式：B 組員模型 API</span>
+        </div>
+      </section>
+
+      <section class="feature-strip" aria-label="功能摘要">
+        <div class="feature-card">
+          <strong>文字信件分析</strong>
+          <span>貼上 Email 主旨、寄件者與內文。</span>
+        </div>
+        <div class="feature-card">
+          <strong>風險白話解釋</strong>
+          <span>把模型欄位轉成一般人看得懂的提醒。</span>
+        </div>
+        <div class="feature-card">
+          <strong>圖片展示功能</strong>
+          <span>先做預覽與 mock 結果，保留未來延伸空間。</span>
+        </div>
       </section>
 
       <section class="workspace">
         <div class="input-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">輸入區</p>
+              <h2>選一封信，或貼上自己的內容</h2>
+            </div>
+          </div>
+
+          <div class="steps" aria-label="分析流程">
+            <div class="step-chip"><span>1</span>貼上或選擇範例信件</div>
+            <div class="step-chip"><span>2</span>點擊分析</div>
+            <div class="step-chip"><span>3</span>查看風險與安全建議</div>
+          </div>
+
           <div class="field-group">
             <label for="sampleSelect">範例案例</label>
             <select id="sampleSelect"></select>
           </div>
 
+          <div class="quick-samples" aria-label="快速範例">
+            <button type="button" class="quick-button" data-type="fake_delivery">假物流</button>
+            <button type="button" class="quick-button" data-type="account_lock">帳號鎖定</button>
+            <button type="button" class="quick-button" data-type="invoice_attachment">附件發票</button>
+            <button type="button" class="quick-button" data-type="fake_prize">中獎詐騙</button>
+            <button type="button" class="quick-button" data-type="refund_or_payment">退款付款</button>
+            <button type="button" class="quick-button" data-type="qr_phishing">QR 釣魚</button>
+            <button type="button" class="quick-button" data-type="legitimate_security_notice">正常通知</button>
+          </div>
+
           <div class="field-group">
-            <label for="messageInput">貼上信件內容</label>
+            <label for="messageInput">信件內容</label>
             <textarea id="messageInput" rows="12" placeholder="貼上 Email 主旨、寄件者與內文，或從上方選擇 dataset 範例"></textarea>
           </div>
 
@@ -37,9 +79,12 @@
 
           <div class="field-group image-field">
             <label for="imageInput">圖片上傳展示</label>
-            <input id="imageInput" type="file" accept="image/*">
+            <div class="upload-zone">
+              <input id="imageInput" type="file" accept="image/*">
+              <p>可拖曳圖片到這裡，或點擊選擇檔案</p>
+              <span>目前圖片功能只做展示，尚未串接 OCR / 多模態模型</span>
+            </div>
             <div id="imagePreview" class="image-preview">尚未選擇圖片</div>
-            <p class="hint">圖片分析目前為展示功能，尚未串接 OCR 或多模態模型。</p>
           </div>
         </div>
 
@@ -52,29 +97,45 @@
             <span id="riskBadge" class="badge neutral">未分析</span>
           </div>
 
+          <div class="score-card">
+            <div class="score-topline">
+              <span>風險分數</span>
+              <strong id="confidenceScore">--</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div id="riskProgress" class="progress-fill"></div>
+            </div>
+          </div>
+
           <div class="summary-grid">
+            <div>
+              <span>風險等級</span>
+              <strong id="riskLevelText">--</strong>
+            </div>
             <div>
               <span>是否疑似釣魚</span>
               <strong id="phishingStatus">--</strong>
             </div>
             <div>
-              <span>信心分數</span>
-              <strong id="confidenceScore">--</strong>
-            </div>
-            <div>
-              <span>分析來源</span>
-              <strong id="modelSource">--</strong>
+              <span>主要原因</span>
+              <strong id="reasonSummary">--</strong>
             </div>
           </div>
 
-          <section>
-            <h3>可疑特徵</h3>
-            <ul id="indicatorsList"></ul>
-          </section>
+          <div class="model-source">
+            <span id="modelSource">Rule-based prototype</span>
+          </div>
 
           <section>
-            <h3>詐騙話術</h3>
-            <ul id="methodsList"></ul>
+            <h3>為什麼可疑？</h3>
+            <div class="tag-group-block">
+              <p>可疑特徵</p>
+              <div id="indicatorsList" class="tag-list"></div>
+            </div>
+            <div class="tag-group-block">
+              <p>詐騙話術</p>
+              <div id="methodsList" class="tag-list"></div>
+            </div>
           </section>
 
           <section class="risk-grid">
@@ -89,8 +150,8 @@
           </section>
 
           <section>
-            <h3>建議安全行動</h3>
-            <ul id="actionsList"></ul>
+            <h3>安全行動 checklist</h3>
+            <div id="actionsList" class="check-list"></div>
           </section>
 
           <section>

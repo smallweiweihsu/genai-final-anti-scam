@@ -46,6 +46,16 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 - 顯示總體風險、是否疑似釣魚、可疑特徵、詐騙話術、個資風險、付款風險、安全行動與白話說明。
 - 圖片上傳目前提供預覽與 mock 分析結果。
 
+## Web Demo 介面功能
+
+- 範例案例載入：可使用下拉選單或快速範例按鈕載入 dataset 代表案例。
+- 使用者自訂信件分析：可貼上任意 Email 主旨、寄件者與內文進行 prototype 分析。
+- Rule-based prototype analyzer：使用關鍵字、急迫語氣、登入要求、付款要求、附件與 QR code 等規則進行展示用判斷。
+- 風險分數視覺化：以進度條與高 / 中 / 低風險樣式呈現 confidence score。
+- 可疑特徵與詐騙話術標籤：用 tag 呈現 indicators 與 manipulation_methods，讓一般使用者更容易掃讀。
+- 安全行動 checklist：把 safe_actions 轉成 checklist 樣式，方便展示可執行建議。
+- 圖片上傳 mock 展示：可預覽圖片並顯示展示用分析結果，目前尚未串接 OCR 或多模態模型。
+
 ## 如何執行 Web Demo
 
 從 repo 根目錄啟動靜態伺服器：
