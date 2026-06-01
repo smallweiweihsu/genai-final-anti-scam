@@ -48,13 +48,15 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 
 ## Web Demo 介面功能
 
+- 文字 / 圖片雙模式輸入：使用 tab 在「文字信件」與「圖片截圖」之間切換，避免兩種輸入同時攤開。
 - 範例案例載入：可使用下拉選單或快速範例按鈕載入 dataset 代表案例。
 - 使用者自訂信件分析：可貼上任意 Email 主旨、寄件者與內文進行 prototype 分析。
 - Rule-based prototype analyzer：使用關鍵字、急迫語氣、登入要求、付款要求、附件與 QR code 等規則進行展示用判斷。
 - 風險分數視覺化：以進度條與高 / 中 / 低風險樣式呈現 confidence score。
 - 可疑特徵與詐騙話術標籤：用 tag 呈現 indicators 與 manipulation_methods，讓一般使用者更容易掃讀。
 - 安全行動 checklist：把 safe_actions 轉成 checklist 樣式，方便展示可執行建議。
-- 圖片上傳 mock 展示：可預覽圖片並顯示展示用分析結果，目前尚未串接 OCR 或多模態模型。
+- 圖片上傳 mock 展示：可預覽圖片，按下分析圖片後顯示展示用結果。
+- 圖片功能目前為 mock 展示，未來可串接 OCR / 多模態模型讀取截圖文字與畫面特徵。
 
 ## 如何執行 Web Demo
 

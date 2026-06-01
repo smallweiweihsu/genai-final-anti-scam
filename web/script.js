@@ -1,12 +1,16 @@
 import { analyzeEmail } from "./analyzer.js";
 import { mockSamples } from "./mockData.js";
 
+const modeTabs = document.querySelectorAll(".tab-button");
+const modePanels = document.querySelectorAll(".mode-section");
 const sampleSelect = document.querySelector("#sampleSelect");
 const messageInput = document.querySelector("#messageInput");
 const analyzeButton = document.querySelector("#analyzeButton");
 const clearButton = document.querySelector("#clearButton");
 const imageInput = document.querySelector("#imageInput");
 const imagePreview = document.querySelector("#imagePreview");
+const analyzeImageButton = document.querySelector("#analyzeImageButton");
+const clearImageButton = document.querySelector("#clearImageButton");
 const quickButtons = document.querySelectorAll(".quick-button");
 
 const riskTitle = document.querySelector("#riskTitle");
@@ -74,7 +78,7 @@ function renderResult(result) {
   riskBadge.textContent = riskLabel(result.risk_level);
   riskBadge.className = `badge ${result.risk_level}`;
   riskLevelText.textContent = riskLabel(result.risk_level);
-  phishingStatus.textContent = result.is_phishing ? "是，建議不要直接操作" : "目前不像";
+  phishingStatus.textContent = result.is_phishing ? "疑似釣魚：是" : "疑似釣魚：目前不像";
   confidenceScore.textContent = `${percent}%`;
   riskProgress.style.width = `${percent}%`;
   riskProgress.className = `progress-fill ${result.risk_level}`;
@@ -87,6 +91,19 @@ function renderResult(result) {
   paymentRisk.textContent = result.payment_risk;
   explanation.textContent = result.explanation_for_general_users;
   disclaimer.textContent = result.disclaimer;
+}
+
+function switchMode(mode) {
+  modeTabs.forEach((tab) => {
+    const active = tab.dataset.mode === mode;
+    tab.classList.toggle("active", active);
+    tab.setAttribute("aria-selected", String(active));
+  });
+  modePanels.forEach((panel) => {
+    const active = panel.dataset.panel === mode;
+    panel.classList.toggle("active", active);
+    panel.hidden = !active;
+  });
 }
 
 function populateSamples() {
@@ -102,6 +119,7 @@ function populateSamples() {
 function loadSample(index) {
   const sample = textSamples[index];
   if (!sample) return;
+  switchMode("text");
   messageInput.value = sample.text;
   sampleSelect.value = String(index);
   renderResult(sample.result);
@@ -113,6 +131,17 @@ function loadByType(type) {
     loadSample(index);
   }
 }
+
+function clearImage() {
+  imageInput.value = "";
+  imagePreview.textContent = "尚未選擇圖片";
+}
+
+modeTabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    switchMode(tab.dataset.mode);
+  });
+});
 
 sampleSelect.addEventListener("change", () => {
   loadSample(Number(sampleSelect.value));
@@ -135,15 +164,15 @@ analyzeButton.addEventListener("click", () => {
 
 clearButton.addEventListener("click", () => {
   messageInput.value = "";
-  sampleSelect.selectedIndex = 0;
-  imageInput.value = "";
-  imagePreview.textContent = "尚未選擇圖片";
   messageInput.focus();
 });
 
 imageInput.addEventListener("change", () => {
   const file = imageInput.files?.[0];
-  if (!file || !imageSample) return;
+  if (!file) {
+    clearImage();
+    return;
+  }
 
   const url = URL.createObjectURL(file);
   imagePreview.innerHTML = "";
@@ -151,8 +180,22 @@ imageInput.addEventListener("change", () => {
   img.src = url;
   img.alt = "上傳圖片預覽";
   imagePreview.appendChild(img);
-  renderResult(imageSample.result);
+});
+
+analyzeImageButton.addEventListener("click", () => {
+  if (!imageInput.files?.[0]) {
+    imageInput.focus();
+    return;
+  }
+  if (imageSample) {
+    renderResult(imageSample.result);
+  }
+});
+
+clearImageButton.addEventListener("click", () => {
+  clearImage();
 });
 
 populateSamples();
+switchMode("text");
 loadSample(0);
