@@ -1,19 +1,39 @@
 # Dataset
 
-此資料夾用來整理期末專案的文字案例、圖片案例、來源紀錄與後續可公開展示的 demo 資料。
+此資料夾存放「看懂可疑信件」專案的資料集輸出。
 
 ## 檔案
 
-- `text_cases.csv`：文字案例與標註。
-- `image_cases.csv`：圖片案例與標註。
-- `sources.md`：資料來源、授權狀態與使用限制。
-- `curated_text/`：整理後可用的文字案例補充資料。
-- `curated_images/`：自製或授權明確的 demo 圖片。
-- `raw_text/`：原始文字資料暫存，不一定上傳。
-- `raw_images/`：原始圖片暫存，不應大量上傳。
+- `text_cases.csv`：可疑信件與正常信件文字案例。
+- `image_cases.csv`：圖片型 phishing、偽登入頁、偽付款通知、QR code phishing 等圖片案例索引。
+- `sources.md`：資料來源、URL、蒐集日期、可信度與備註。
 
-## 上傳原則
+## text_cases.csv 欄位
 
-可以上傳整理後的 CSV、Markdown、自製 demo 文字、自製 demo 圖片與授權明確圖片。
+```text
+id,email_subject,email_content,sender,sender_domain,has_link,has_attachment,urgency_level,suspicious_keywords,phishing_type,risk_label,explanation,source_url,source_type
+```
 
-不要上傳 API key、真實個資截圖、授權不明圖片、大量 raw images、真實釣魚網站內容或可疑附件。
+## image_cases.csv 欄位
+
+```text
+id,image_file,case_title,image_case_type,risk_label,description,visual_risk_points,text_in_image,source_url,source_type,license_note,can_be_public_demo
+```
+
+## 重要說明
+
+本資料集採用可信來源導向的安全改寫策略。案例內容不是直接複製真實釣魚信全文，也不保存活的惡意連結、真實個資、真實信用卡、真實驗證碼或可疑附件。
+
+## 重新產生資料
+
+從 repo 根目錄執行：
+
+```bash
+python crawler/search_and_collect.py
+```
+
+此指令會更新：
+
+- `dataset/text_cases.csv`
+- `dataset/image_cases.csv`
+- `dataset/sources.md`
