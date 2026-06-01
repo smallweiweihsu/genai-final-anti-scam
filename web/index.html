@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>真假訊息守門員</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="workspace">
+        <div class="input-panel">
+          <p class="eyebrow">生成式 AI 防詐內容分析器</p>
+          <h1>真假訊息守門員</h1>
+          <p class="summary">貼上可疑訊息，查看風險等級、可疑特徵與安全建議。</p>
+
+          <label for="messageInput">可疑文字</label>
+          <textarea id="messageInput" rows="9" placeholder="貼上簡訊、Email、LINE 訊息或通知內容"></textarea>
+
+          <div class="controls">
+            <button id="analyzeButton" type="button">分析文字</button>
+            <button id="loadScamButton" type="button" class="secondary">載入詐騙範例</button>
+            <button id="loadNormalButton" type="button" class="secondary">載入正常範例</button>
+          </div>
+
+          <label for="imageInput">圖片上傳</label>
+          <input id="imageInput" type="file" accept="image/*">
+          <div id="imagePreview" class="image-preview">尚未選擇圖片</div>
+        </div>
+
+        <div class="result-panel" aria-live="polite">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">分析結果</p>
+              <h2 id="riskTitle">等待分析</h2>
+            </div>
+            <span id="riskBadge" class="badge neutral">未分析</span>
+          </div>
+
+          <div class="score-row">
+            <span>信心分數</span>
+            <strong id="confidenceScore">--</strong>
+          </div>
+
+          <section>
+            <h3>可疑特徵</h3>
+            <ul id="indicatorsList"></ul>
+          </section>
+
+          <section>
+            <h3>詐騙話術</h3>
+            <ul id="methodsList"></ul>
+          </section>
+
+          <section class="risk-grid">
+            <div>
+              <h3>個資風險</h3>
+              <p id="personalRisk">請先輸入內容。</p>
+            </div>
+            <div>
+              <h3>付款風險</h3>
+              <p id="paymentRisk">請先輸入內容。</p>
+            </div>
+          </section>
+
+          <section>
+            <h3>安全建議</h3>
+            <ul id="actionsList"></ul>
+          </section>
+
+          <section>
+            <h3>白話說明</h3>
+            <p id="explanation">分析後會在這裡顯示一般使用者能理解的說明。</p>
+          </section>
+
+          <p id="disclaimer" class="disclaimer">此結果僅供輔助判斷，重要操作請透過官方管道查證。</p>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>

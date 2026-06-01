@@ -1,0 +1,6 @@
+﻿"id","image_file","type","label","risk_level","visual_risk_points","text_in_image","personal_data_risk","payment_risk","source","license_note","can_be_public_demo"
+"I001","curated_images/fake_delivery_demo_01.png","fake_delivery","scam","high","假物流頁面;補繳運費按鈕;倒數提示","包裹派送失敗，請補繳運費","可能要求姓名、電話、地址","可能要求信用卡付款","self-made","自製 demo 圖","true"
+"I002","curated_images/fake_bank_demo_01.png","fake_bank","phishing","high","仿銀行登入頁;要求帳號密碼;安全警告文案","帳戶安全驗證","可能要求帳號、密碼、驗證碼","可能導向盜刷或帳戶盜用","self-made","自製 demo 圖","true"
+"I003","curated_images/gov_payment_demo_01.png","fake_government","scam","high","假政府繳費頁;罰鍰通知;立即繳納按鈕","您有一筆交通罰鍰尚未繳納","可能要求身分證字號與車牌資料","可能要求線上付款","self-made","自製 demo 圖","true"
+"I004","curated_images/suspicious_line_demo_01.png","line_message","suspicious","medium","陌生帳號;投資邀請;高報酬字眼","加入投資群組領取免費名額","可能要求加入群組後提供個資","可能誘導後續投資匯款","self-made","自製 demo 圖","true"
+"I005","curated_images/normal_notice_demo_01.png","normal_notification","legitimate","low","一般通知頁;無登入要求;無付款要求","您的預約已成立，可於官方平台查看詳細資訊","無明顯個資風險","無付款風險","self-made","自製 demo 圖","true"
