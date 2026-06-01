@@ -142,6 +142,30 @@ def risk_level(case: dict) -> str:
     return "medium"
 
 
+def risk_score(case: dict) -> int:
+    level = risk_level(case)
+    if level == "low":
+        base = 18
+        if case["phishing_type"] == "legitimate_it_maintenance":
+            return base
+        return 24
+    if level == "medium":
+        score = 48
+        if case["has_link"] == "true":
+            score += 7
+        if case["phishing_type"] in {"qr_phishing", "refund_or_payment"}:
+            score += 6
+        return min(score, 65)
+    score = 78
+    if case["has_attachment"] == "true":
+        score += 8
+    if case["has_link"] == "true":
+        score += 5
+    if case["urgency_level"] == "high":
+        score += 4
+    return min(score, 95)
+
+
 def confidence(case: dict) -> float:
     if case["risk_label"] == "normal":
         return 0.82
@@ -231,6 +255,7 @@ def to_mock_sample(case: dict, index: int) -> dict:
             "is_phishing": case["risk_label"] != "normal",
             "label": label,
             "risk_level": risk_level(case),
+            "risk_score": risk_score(case),
             "confidence_score": confidence(case),
             "indicators": indicators(case),
             "manipulation_methods": manipulation_methods(case),
@@ -279,6 +304,7 @@ def write_mock_data(samples: list[dict]) -> None:
             "is_phishing": True,
             "label": "suspicious",
             "risk_level": "medium",
+            "risk_score": 58,
             "confidence_score": 0.68,
             "indicators": ["圖片可能包含偽登入頁或付款提示", "需進一步 OCR 或多模態模型判讀", "來源與網址無法僅靠圖片確認"],
             "manipulation_methods": ["冒充官方頁面", "製造急迫感", "誘導輸入資料"],

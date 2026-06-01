@@ -28,6 +28,16 @@ genai-final-anti-scam/
 └── presentation/
 ```
 
+## 網站頁面結構
+
+- `web/index.html`：分析 Demo，老師打開後可直接操作。
+- `web/workflow.html`：系統流程頁，說明使用者輸入、模型判斷、白話解釋與安全行動。
+- `web/interface.html`：介面設計頁，說明如何把模型輸出轉成 tags、checklist 與白話解釋。
+- `web/model.html`：模型說明頁，整理任務、API 輸出與評估指標。
+- `web/dataset.html`：資料集頁，說明資料數量、來源與安全策略。
+
+網站採白底學術展示風格，使用深綠 / 墨綠作為主色，導覽列、卡片與按鈕都有平滑 hover interaction。
+
 ## Dataset
 
 主要輸出位於 `dataset/`：
@@ -52,11 +62,26 @@ CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 - 範例案例載入：可使用下拉選單或快速範例按鈕載入 dataset 代表案例。
 - 使用者自訂信件分析：可貼上任意 Email 主旨、寄件者與內文進行 prototype 分析。
 - Rule-based prototype analyzer：使用關鍵字、急迫語氣、登入要求、付款要求、附件與 QR code 等規則進行展示用判斷。
-- 風險分數視覺化：以進度條與高 / 中 / 低風險樣式呈現 confidence score。
+- 風險分數視覺化：以進度條與高 / 中 / 低風險樣式呈現 `risk_score`。
+- 判斷信心顯示：另外呈現 `confidence_score`，避免把模型信心誤解成危險程度。
 - 可疑特徵與詐騙話術標籤：用 tag 呈現 indicators 與 manipulation_methods，讓一般使用者更容易掃讀。
 - 安全行動 checklist：把 safe_actions 轉成 checklist 樣式，方便展示可執行建議。
 - 圖片上傳 mock 展示：可預覽圖片，按下分析圖片後顯示展示用結果。
 - 圖片功能目前為 mock 展示，未來可串接 OCR / 多模態模型讀取截圖文字與畫面特徵。
+
+## risk_score 與 confidence_score
+
+- `risk_score`：危險程度分數，0-100 整數，用於風險進度條。
+- `confidence_score`：模型或 prototype 對判斷結果的信心，0-1 小數。
+- 兩者不能混用；例如「低風險、判斷信心 82%」代表系統有把握這是低風險，不代表危險程度是 82%。
+
+## 展示建議順序
+
+1. 打開分析 Demo，先載入「假物流」或「帳號鎖定」快速範例。
+2. 說明風險等級、risk_score 與 confidence_score 的差異。
+3. 展示可疑特徵 tags、詐騙話術 tags 與安全行動 checklist。
+4. 切到圖片截圖 tab，說明目前為 mock 展示，未來可串接 OCR / 多模態模型。
+5. 依序查看系統流程、介面設計、模型說明與資料集頁。
 
 ## 如何執行 Web Demo
 
@@ -112,7 +137,7 @@ python scripts/build_mock_data.py
 - 圖片分析目前尚未串接 OCR 或多模態模型，只做預覽與 mock 結果。
 - Dataset 是可信來源導向的安全改寫案例，不是原始威脅情資。
 
-## 後續串接 B 組員模型 API
+## 後續串接模型 API
 
 前端目前的分析入口在 `web/script.js`。之後可將 `analyzeEmail(messageInput.value)` 替換成 API 呼叫，例如：
 
@@ -126,7 +151,7 @@ const result = await response.json();
 renderResult(result);
 ```
 
-B 組員 API 只要回傳符合 `docs/api_schema.md` 的欄位，即可直接沿用目前的結果呈現區。
+模型 API 只要回傳符合 `docs/api_schema.md` 的欄位，即可直接沿用目前的結果呈現區。
 
 ## 資料安全策略
 

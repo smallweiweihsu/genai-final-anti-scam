@@ -10,6 +10,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "medium",
+      "risk_score": 55,
       "confidence_score": 0.81,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -46,6 +47,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "medium",
+      "risk_score": 55,
       "confidence_score": 0.81,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -82,6 +84,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "high",
+      "risk_score": 90,
       "confidence_score": 0.8799999999999999,
       "indicators": [
         "要求開啟附件",
@@ -119,6 +122,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "high",
+      "risk_score": 87,
       "confidence_score": 0.8700000000000001,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -155,6 +159,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "medium",
+      "risk_score": 61,
       "confidence_score": 0.81,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -191,6 +196,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "high",
+      "risk_score": 87,
       "confidence_score": 0.8700000000000001,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -228,6 +234,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "high",
+      "risk_score": 95,
       "confidence_score": 0.94,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -266,6 +273,7 @@ export const mockSamples = [
       "is_phishing": false,
       "label": "legitimate",
       "risk_level": "low",
+      "risk_score": 24,
       "confidence_score": 0.82,
       "indicators": [
         "official app",
@@ -299,6 +307,7 @@ export const mockSamples = [
       "is_phishing": false,
       "label": "legitimate",
       "risk_level": "low",
+      "risk_score": 24,
       "confidence_score": 0.82,
       "indicators": [
         "order shipped",
@@ -332,6 +341,7 @@ export const mockSamples = [
       "is_phishing": false,
       "label": "legitimate",
       "risk_level": "low",
+      "risk_score": 18,
       "confidence_score": 0.82,
       "indicators": [
         "maintenance",
@@ -365,6 +375,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "phishing",
       "risk_level": "high",
+      "risk_score": 87,
       "confidence_score": 0.8700000000000001,
       "indicators": [
         "包含連結或導向外部頁面",
@@ -401,6 +412,7 @@ export const mockSamples = [
       "is_phishing": false,
       "label": "legitimate",
       "risk_level": "low",
+      "risk_score": 18,
       "confidence_score": 0.82,
       "indicators": [
         "maintenance",
@@ -433,6 +445,7 @@ export const mockSamples = [
       "is_phishing": true,
       "label": "suspicious",
       "risk_level": "medium",
+      "risk_score": 58,
       "confidence_score": 0.68,
       "indicators": [
         "圖片可能包含偽登入頁或付款提示",

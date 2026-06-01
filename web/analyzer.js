@@ -76,8 +76,8 @@ function unique(items) {
 }
 
 function riskLevel(score) {
-  if (score >= 55) return "high";
-  if (score >= 25) return "medium";
+  if (score >= 70) return "high";
+  if (score >= 35) return "medium";
   return "low";
 }
 
@@ -89,7 +89,11 @@ function labelFor(level, score) {
 
 function confidence(score) {
   if (score <= 0) return 0.62;
-  return Math.min(0.95, 0.58 + score / 100);
+  return Math.min(0.95, 0.68 + score / 250);
+}
+
+function riskScore(rawScore) {
+  return Math.max(0, Math.min(100, Math.round(rawScore)));
 }
 
 function personalDataRisk(matches, label) {
@@ -149,9 +153,9 @@ export function analyzeEmail(text) {
     }
   }
 
-  score = Math.max(0, score);
-  const level = riskLevel(score);
-  const label = labelFor(level, score);
+  const dangerScore = riskScore(score);
+  const level = riskLevel(dangerScore);
+  const label = labelFor(level, dangerScore);
   const isPhishing = label === "phishing" || label === "suspicious";
   const cleanIndicators = unique(indicators.length ? indicators : ["未發現明顯高風險特徵"]);
   const cleanMethods = unique(methods.filter((item) => !item.includes("低風險") && !item.includes("正常")));
@@ -160,7 +164,8 @@ export function analyzeEmail(text) {
     is_phishing: isPhishing,
     label,
     risk_level: level,
-    confidence_score: confidence(score),
+    risk_score: dangerScore,
+    confidence_score: confidence(dangerScore),
     indicators: cleanIndicators,
     manipulation_methods: cleanMethods.length ? cleanMethods : ["無明顯詐騙話術"],
     personal_data_risk: personalDataRisk(matches, label),

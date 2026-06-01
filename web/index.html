@@ -7,6 +7,17 @@
     <link rel="stylesheet" href="./style.css">
   </head>
   <body>
+    <nav class="site-nav" aria-label="主導覽">
+      <a class="site-brand" href="./index.html">看懂可疑信件</a>
+      <div class="nav-links">
+        <a class="nav-link active" href="./index.html">分析 Demo</a>
+        <a class="nav-link" href="./workflow.html">系統流程</a>
+        <a class="nav-link" href="./interface.html">介面設計</a>
+        <a class="nav-link" href="./model.html">模型說明</a>
+        <a class="nav-link" href="./dataset.html">資料集</a>
+        <a class="nav-link" href="https://github.com/smallweiweihsu/genai-final-anti-scam">GitHub</a>
+      </div>
+    </nav>
     <main class="app-shell">
       <section class="hero">
         <div class="hero-copy">
@@ -21,7 +32,7 @@
         </div>
         <div class="mode-panel" aria-label="目前模式">
           <span>目前模式：Rule-based prototype</span>
-          <span>未來模式：B 組員模型 API</span>
+          <span>未來模式：模型 API</span>
         </div>
       </section>
 
@@ -102,10 +113,14 @@
           <div class="score-card">
             <div class="score-topline">
               <span id="riskLevelText">--</span>
-              <strong id="confidenceScore">--</strong>
+              <strong id="riskScoreText">--</strong>
             </div>
             <div class="progress-track" aria-hidden="true">
               <div id="riskProgress" class="progress-fill"></div>
+            </div>
+            <div class="confidence-row">
+              <span>判斷信心</span>
+              <strong id="confidenceScore">--</strong>
             </div>
           </div>
 
@@ -154,6 +169,6 @@
       </section>
     </main>
 
-    <script type="module" src="./script.js"></script>
+    <script type="module" src="./script.js?v=20260601-risk-score"></script>
   </body>
 </html>

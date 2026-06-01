@@ -1,5 +1,5 @@
-import { analyzeEmail } from "./analyzer.js";
-import { mockSamples } from "./mockData.js";
+import { analyzeEmail } from "./analyzer.js?v=20260601-risk-score";
+import { mockSamples } from "./mockData.js?v=20260601-risk-score";
 
 const modeTabs = document.querySelectorAll(".tab-button");
 const modePanels = document.querySelectorAll(".mode-section");
@@ -17,6 +17,7 @@ const riskTitle = document.querySelector("#riskTitle");
 const riskBadge = document.querySelector("#riskBadge");
 const riskLevelText = document.querySelector("#riskLevelText");
 const phishingStatus = document.querySelector("#phishingStatus");
+const riskScoreText = document.querySelector("#riskScoreText");
 const confidenceScore = document.querySelector("#confidenceScore");
 const riskProgress = document.querySelector("#riskProgress");
 const reasonSummary = document.querySelector("#reasonSummary");
@@ -73,14 +74,16 @@ function renderChecklist(element, items) {
 }
 
 function renderResult(result) {
-  const percent = Math.round(result.confidence_score * 100);
+  const riskPercent = Number.isFinite(result.risk_score) ? result.risk_score : Math.round(result.confidence_score * 100);
+  const confidencePercent = Math.round(result.confidence_score * 100);
   riskTitle.textContent = riskTitleText(result);
   riskBadge.textContent = riskLabel(result.risk_level);
   riskBadge.className = `badge ${result.risk_level}`;
   riskLevelText.textContent = riskLabel(result.risk_level);
   phishingStatus.textContent = result.is_phishing ? "疑似釣魚：是" : "疑似釣魚：目前不像";
-  confidenceScore.textContent = `${percent}%`;
-  riskProgress.style.width = `${percent}%`;
+  riskScoreText.textContent = `風險分數 ${riskPercent}%`;
+  confidenceScore.textContent = `${confidencePercent}%`;
+  riskProgress.style.width = `${riskPercent}%`;
   riskProgress.className = `progress-fill ${result.risk_level}`;
   reasonSummary.textContent = reasonText(result.risk_level);
   modelSource.textContent = result.model_source || "Rule-based prototype";

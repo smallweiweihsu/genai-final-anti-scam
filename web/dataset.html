@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>資料集｜看懂可疑信件</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="主導覽">
+      <a class="site-brand" href="./index.html">看懂可疑信件</a>
+      <div class="nav-links">
+        <a class="nav-link" href="./index.html">分析 Demo</a>
+        <a class="nav-link" href="./workflow.html">系統流程</a>
+        <a class="nav-link" href="./interface.html">介面設計</a>
+        <a class="nav-link" href="./model.html">模型說明</a>
+        <a class="nav-link active" href="./dataset.html">資料集</a>
+        <a class="nav-link" href="https://github.com/smallweiweihsu/genai-final-anti-scam">GitHub</a>
+      </div>
+    </nav>
+    <main class="page-shell">
+      <section class="page-hero">
+        <p class="eyebrow">Dataset</p>
+        <h1>資料集</h1>
+        <p>資料集採可信來源導向的安全改寫策略，提供模型 prototype 與介面展示使用。</p>
+      </section>
+
+      <section class="stat-grid">
+        <article class="stat-card"><span>文字案例</span><strong>146</strong></article>
+        <article class="stat-card"><span>phishing</span><strong>98</strong></article>
+        <article class="stat-card"><span>normal</span><strong>48</strong></article>
+        <article class="stat-card"><span>phishing_type</span><strong>10 類</strong></article>
+      </section>
+
+      <section class="content-grid">
+        <article class="info-card">
+          <h2>資料來源</h2>
+          <div class="pill-list">
+            <span class="pill">Microsoft Security</span><span class="pill">FTC</span><span class="pill">Kaspersky</span><span class="pill">Trend Micro</span><span class="pill">Fortinet</span><span class="pill">Cisco Talos</span><span class="pill">OpenPhish</span><span class="pill">Cofense</span><span class="pill">Docusign</span><span class="pill">台灣教育單位</span><span class="pill">台灣政府 / 銀行防詐資訊</span>
+          </div>
+        </article>
+        <article class="info-card">
+          <h2>資料安全策略</h2>
+          <ul class="clean-list">
+            <li>不保存真實釣魚連結</li>
+            <li>不保存真實個資</li>
+            <li>不下載可疑附件</li>
+            <li>不重新散布真實釣魚信全文</li>
+            <li>使用可信來源導向的安全改寫案例</li>
+          </ul>
+        </article>
+      </section>
+
+      <section class="info-card">
+        <h2>text_cases.csv 主要欄位</h2>
+        <div class="field-grid">
+          <span>email_subject</span><span>email_content</span><span>sender</span><span>sender_domain</span><span>has_link</span><span>has_attachment</span><span>urgency_level</span><span>suspicious_keywords</span><span>phishing_type</span><span>risk_label</span><span>explanation</span>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -9,6 +9,7 @@
   "is_phishing": true,
   "label": "phishing",
   "risk_level": "high",
+  "risk_score": 82,
   "confidence_score": 0.91,
   "indicators": [
     "急迫語氣",
@@ -37,7 +38,9 @@
 - `is_phishing`：是否偏向 phishing / scam。
 - `label`：分類結果，可為 `phishing`、`scam`、`suspicious`、`legitimate`。
 - `risk_level`：風險等級，可為 `low`、`medium`、`high`。
-- `confidence_score`：0 到 1 之間的信心分數。
+- `risk_score`：危險程度分數，0 到 100 的整數。此欄位用於風險進度條與危險程度呈現。
+- `confidence_score`：0 到 1 之間的信心分數，表示模型或 prototype 對判斷結果的把握程度。
+- `risk_score` 與 `confidence_score` 不能混用；前者代表危險程度，後者代表判斷信心。
 - `indicators`：可疑特徵。
 - `manipulation_methods`：詐騙或社交工程話術。
 - `personal_data_risk`：個資風險說明。

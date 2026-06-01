@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>介面設計｜看懂可疑信件</title>
+    <link rel="stylesheet" href="./style.css">
+  </head>
+  <body>
+    <nav class="site-nav" aria-label="主導覽">
+      <a class="site-brand" href="./index.html">看懂可疑信件</a>
+      <div class="nav-links">
+        <a class="nav-link" href="./index.html">分析 Demo</a>
+        <a class="nav-link" href="./workflow.html">系統流程</a>
+        <a class="nav-link active" href="./interface.html">介面設計</a>
+        <a class="nav-link" href="./model.html">模型說明</a>
+        <a class="nav-link" href="./dataset.html">資料集</a>
+        <a class="nav-link" href="https://github.com/smallweiweihsu/genai-final-anti-scam">GitHub</a>
+      </div>
+    </nav>
+    <main class="page-shell">
+      <section class="page-hero">
+        <p class="eyebrow">Interface Design</p>
+        <h1>介面設計</h1>
+        <p>介面不是只顯示模型分類，而是把模型輸出轉換成可理解、可行動的安全提醒。</p>
+      </section>
+
+      <section class="content-grid">
+        <article class="interactive-card"><h2>文字 / 圖片雙模式輸入</h2><p>使用 tab 降低視覺負擔，讓使用者一次只處理一種輸入。</p></article>
+        <article class="interactive-card"><h2>risk_score 與 confidence_score 分離</h2><p>risk_score 表示危險程度，confidence_score 表示判斷信心，避免誤導。</p></article>
+        <article class="interactive-card"><h2>可疑特徵 tags</h2><p>把 indicators 變成易掃讀的標籤，例如急迫語氣、要求登入、可疑連結。</p></article>
+        <article class="interactive-card"><h2>詐騙話術 tags</h2><p>呈現社交工程手法，例如製造急迫感、冒充官方、付款誘導。</p></article>
+        <article class="interactive-card"><h2>個資 / 付款風險</h2><p>分開提醒使用者可能失去什麼資料或金錢。</p></article>
+        <article class="interactive-card"><h2>安全行動 checklist</h2><p>把建議轉成清楚步驟，例如不要點連結、改走官方 App。</p></article>
+      </section>
+
+      <section class="info-card">
+        <h2>如何串接模型 API</h2>
+        <p>目前 prototype：</p>
+        <pre class="code-block"><code>const result = analyzeEmail(messageInput.value);
+renderResult(result);</code></pre>
+        <p>未來 API：</p>
+        <pre class="code-block"><code>const response = await fetch("/api/analyze-email", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: messageInput.value })
+});
+const result = await response.json();
+renderResult(result);</code></pre>
+        <p>只要模型回傳符合 docs/api_schema.md 的 JSON，前端就可以直接顯示。</p>
+      </section>
+    </main>
+  </body>
+</html>
