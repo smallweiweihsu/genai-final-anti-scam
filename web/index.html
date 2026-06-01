@@ -8,24 +8,39 @@
   </head>
   <body>
     <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">生成式 AI 輔助一般使用者辨識釣魚郵件</p>
+          <h1>看懂可疑信件</h1>
+        </div>
+        <div class="prototype-badge">Prototype 分析</div>
+      </section>
+
       <section class="workspace">
         <div class="input-panel">
-          <p class="eyebrow">生成式 AI 輔助釣魚郵件辨識</p>
-          <h1>看懂可疑信件</h1>
-          <p class="summary">貼上可疑訊息，查看風險等級、可疑特徵與安全建議。</p>
-
-          <label for="messageInput">可疑文字</label>
-          <textarea id="messageInput" rows="9" placeholder="貼上簡訊、Email、LINE 訊息或通知內容"></textarea>
-
-          <div class="controls">
-            <button id="analyzeButton" type="button">分析文字</button>
-            <button id="loadScamButton" type="button" class="secondary">載入詐騙範例</button>
-            <button id="loadNormalButton" type="button" class="secondary">載入正常範例</button>
+          <div class="field-group">
+            <label for="sampleSelect">範例案例</label>
+            <select id="sampleSelect"></select>
           </div>
 
-          <label for="imageInput">圖片上傳</label>
-          <input id="imageInput" type="file" accept="image/*">
-          <div id="imagePreview" class="image-preview">尚未選擇圖片</div>
+          <div class="field-group">
+            <label for="messageInput">貼上信件內容</label>
+            <textarea id="messageInput" rows="12" placeholder="貼上 Email 主旨、寄件者與內文，或從上方選擇 dataset 範例"></textarea>
+          </div>
+
+          <div class="controls">
+            <button id="analyzeButton" type="button">分析信件</button>
+            <button id="clearButton" type="button" class="secondary">清空</button>
+          </div>
+
+          <p class="hint">目前為 rule-based prototype，用於期末展示與介面測試，不代表正式資安判斷。</p>
+
+          <div class="field-group image-field">
+            <label for="imageInput">圖片上傳展示</label>
+            <input id="imageInput" type="file" accept="image/*">
+            <div id="imagePreview" class="image-preview">尚未選擇圖片</div>
+            <p class="hint">圖片分析目前為展示功能，尚未串接 OCR 或多模態模型。</p>
+          </div>
         </div>
 
         <div class="result-panel" aria-live="polite">
@@ -37,9 +52,19 @@
             <span id="riskBadge" class="badge neutral">未分析</span>
           </div>
 
-          <div class="score-row">
-            <span>信心分數</span>
-            <strong id="confidenceScore">--</strong>
+          <div class="summary-grid">
+            <div>
+              <span>是否疑似釣魚</span>
+              <strong id="phishingStatus">--</strong>
+            </div>
+            <div>
+              <span>信心分數</span>
+              <strong id="confidenceScore">--</strong>
+            </div>
+            <div>
+              <span>分析來源</span>
+              <strong id="modelSource">--</strong>
+            </div>
           </div>
 
           <section>
@@ -55,25 +80,25 @@
           <section class="risk-grid">
             <div>
               <h3>個資風險</h3>
-              <p id="personalRisk">請先輸入內容。</p>
+              <p id="personalRisk">請先輸入或載入信件。</p>
             </div>
             <div>
               <h3>付款風險</h3>
-              <p id="paymentRisk">請先輸入內容。</p>
+              <p id="paymentRisk">請先輸入或載入信件。</p>
             </div>
           </section>
 
           <section>
-            <h3>安全建議</h3>
+            <h3>建議安全行動</h3>
             <ul id="actionsList"></ul>
           </section>
 
           <section>
-            <h3>白話說明</h3>
+            <h3>白話解釋</h3>
             <p id="explanation">分析後會在這裡顯示一般使用者能理解的說明。</p>
           </section>
 
-          <p id="disclaimer" class="disclaimer">此結果僅供輔助判斷，重要操作請透過官方管道查證。</p>
+          <p id="disclaimer" class="disclaimer">目前為 prototype 分析，不代表正式資安判斷。</p>
         </div>
       </section>
     </main>

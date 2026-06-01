@@ -2,12 +2,13 @@
   --bg: #f6f7f4;
   --panel: #ffffff;
   --ink: #18201f;
-  --muted: #61706d;
+  --muted: #62706c;
   --line: #d9dfdc;
   --accent: #0f766e;
   --accent-strong: #115e59;
+  --accent-soft: #e5f3f1;
   --danger: #b42318;
-  --warning: #b7791f;
+  --warning: #a16207;
   --safe: #26734d;
 }
 
@@ -24,15 +25,23 @@ body {
 }
 
 .app-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1220px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 32px 0;
+  padding: 28px 0;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 18px;
 }
 
 .workspace {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  gap: 20px;
+  gap: 18px;
   align-items: start;
 }
 
@@ -41,14 +50,14 @@ body {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 24px;
+  padding: 22px;
 }
 
 .eyebrow {
   margin: 0 0 8px;
   color: var(--accent-strong);
-  font-size: 0.85rem;
-  font-weight: 700;
+  font-size: 0.86rem;
+  font-weight: 800;
 }
 
 h1,
@@ -59,8 +68,8 @@ p {
 }
 
 h1 {
-  margin-bottom: 10px;
-  font-size: 2.15rem;
+  margin-bottom: 0;
+  font-size: 2.25rem;
 }
 
 h2 {
@@ -73,42 +82,61 @@ h3 {
   font-size: 1rem;
 }
 
-.summary {
-  color: var(--muted);
-  line-height: 1.7;
+.prototype-badge {
+  border: 1px solid #c9b458;
+  border-radius: 999px;
+  padding: 8px 13px;
+  color: #665000;
+  background: #fff7c2;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.field-group {
+  margin-bottom: 16px;
+}
+
+.image-field {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
 }
 
 label {
   display: block;
-  margin: 18px 0 8px;
-  font-weight: 700;
+  margin-bottom: 8px;
+  font-weight: 800;
 }
 
 textarea,
+select,
 input[type="file"] {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
+  color: var(--ink);
+  background: #fbfcfb;
   font: inherit;
 }
 
+select,
+input[type="file"] {
+  min-height: 44px;
+  padding: 10px 12px;
+}
+
 textarea {
-  min-height: 210px;
+  min-height: 300px;
   padding: 14px;
   resize: vertical;
   line-height: 1.7;
-}
-
-input[type="file"] {
-  padding: 12px;
-  background: #fbfcfb;
 }
 
 .controls {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 10px;
 }
 
 button {
@@ -118,7 +146,7 @@ button {
   color: #fff;
   background: var(--accent);
   font: inherit;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -128,7 +156,14 @@ button:hover {
 
 button.secondary {
   color: var(--accent-strong);
-  background: #e7f4f1;
+  background: var(--accent-soft);
+}
+
+.hint,
+.disclaimer {
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
 }
 
 .image-preview {
@@ -149,8 +184,7 @@ button.secondary {
   object-fit: contain;
 }
 
-.result-header,
-.score-row {
+.result-header {
   display: flex;
   justify-content: space-between;
   gap: 16px;
@@ -162,7 +196,7 @@ button.secondary {
   border-radius: 999px;
   padding: 7px 12px;
   font-size: 0.88rem;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 .badge.neutral {
@@ -185,17 +219,37 @@ button.secondary {
   background: var(--safe);
 }
 
-.score-row {
-  margin: 22px 0;
-  padding: 14px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 22px 0 8px;
+}
+
+.summary-grid div,
+.risk-grid div {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfcfb;
+}
+
+.summary-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.summary-grid strong {
+  display: block;
+  line-height: 1.35;
 }
 
 .risk-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 12px;
 }
 
 ul {
@@ -210,24 +264,34 @@ section {
 
 .disclaimer {
   margin-top: 22px;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.7;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
 }
 
-@media (max-width: 860px) {
+@media (max-width: 900px) {
+  .topbar,
   .workspace,
-  .risk-grid {
+  .risk-grid,
+  .summary-grid {
     grid-template-columns: 1fr;
   }
 
+  .topbar {
+    display: grid;
+    align-items: start;
+  }
+
   .app-shell {
-    width: min(100% - 20px, 720px);
+    width: min(100% - 20px, 760px);
     padding: 20px 0;
   }
 
   .input-panel,
   .result-panel {
     padding: 18px;
+  }
+
+  h1 {
+    font-size: 1.8rem;
   }
 }

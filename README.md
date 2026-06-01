@@ -38,6 +38,39 @@ genai-final-anti-scam/
 
 CSV 採 UTF-8 with BOM，方便 Excel 開啟繁體中文。
 
+## 目前功能
+
+- 從 `dataset/text_cases.csv` 產生可展示的 `web/mockData.js`。
+- 提供 10-12 筆代表性範例案例，包含假物流、帳號鎖定、附件發票、中獎、退款、QR phishing、文件簽署與正常通知。
+- 使用者可貼上一封信件，透過 rule-based prototype analyzer 取得分析結果。
+- 顯示總體風險、是否疑似釣魚、可疑特徵、詐騙話術、個資風險、付款風險、安全行動與白話說明。
+- 圖片上傳目前提供預覽與 mock 分析結果。
+
+## 如何執行 Web Demo
+
+從 repo 根目錄啟動靜態伺服器：
+
+```bash
+python -m http.server 5501 -d web
+```
+
+接著開啟：
+
+```text
+http://localhost:5501/
+```
+
+若要重新從 dataset 產生前端範例資料：
+
+```bash
+python scripts/build_mock_data.py
+```
+
+此指令會更新：
+
+- `docs/dataset_quality_report.md`
+- `web/mockData.js`
+
 ## Crawler
 
 重新產生 dataset：
@@ -51,6 +84,37 @@ python crawler/search_and_collect.py
 1. `search_and_collect.py`：根據可信來源建立來源導向的安全改寫案例。
 2. `clean_dataset.py`：清理欄位、去重複、過濾低品質案例。
 3. `export_csv.py`：輸出 `dataset/text_cases.csv`、`dataset/image_cases.csv`、`dataset/sources.md`。
+
+重新產生 dataset 後，請再執行：
+
+```bash
+python scripts/build_mock_data.py
+```
+
+讓前端展示案例同步更新。
+
+## 目前限制
+
+- `web/analyzer.js` 是 rule-based prototype，不是正式模型。
+- 分析結果只供期末展示與介面測試，不代表正式資安判斷。
+- 圖片分析目前尚未串接 OCR 或多模態模型，只做預覽與 mock 結果。
+- Dataset 是可信來源導向的安全改寫案例，不是原始威脅情資。
+
+## 後續串接 B 組員模型 API
+
+前端目前的分析入口在 `web/script.js`。之後可將 `analyzeEmail(messageInput.value)` 替換成 API 呼叫，例如：
+
+```js
+const response = await fetch("/api/analyze-email", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ text: messageInput.value })
+});
+const result = await response.json();
+renderResult(result);
+```
+
+B 組員 API 只要回傳符合 `docs/api_schema.md` 的欄位，即可直接沿用目前的結果呈現區。
 
 ## 資料安全策略
 
