@@ -1,0 +1,19 @@
+{
+  "accuracy": 0.9862604722010663,
+  "precision": 0.985985401459854,
+  "recall": 0.9876579316799251,
+  "f1": 0.9868209578913533,
+  "confusion_matrix": [
+    [
+      15489,
+      240
+    ],
+    [
+      211,
+      16885
+    ]
+  ],
+  "train_size": 131299,
+  "test_size": 32825,
+  "model": "char-level TF-IDF + Logistic Regression"
+}
