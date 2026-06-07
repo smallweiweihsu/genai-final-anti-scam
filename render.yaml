@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: genai-anti-scam-api
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:5501,http://127.0.0.1:5501,https://smallweiweihsu.github.io,https://smallweiweihsu.github.io/genai-final-anti-scam

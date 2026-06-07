@@ -192,3 +192,91 @@ renderResult(result);
 ## 免責聲明
 
 本專案輸出僅供教學展示、模型 prototype 與輔助判斷，不應作為資安、法律或金融決策的唯一依據。重要操作請透過官方管道查證。
+
+## Public backend deployment for live model inference
+
+The project direction is now **GitHub Pages frontend + public Flask backend deployment**. The teacher should be able to open the GitHub Pages website and call a public backend for real-time model inference without requiring a local `python app.py` process.
+
+Architecture:
+
+- `web/`: static frontend deployed by GitHub Pages.
+- `backend/`: Flask API deployed to Render or Railway.
+- `backend/phishing_model/`: TF-IDF + Logistic Regression artifacts used by the API.
+
+The backend keeps the existing model approach and does not use Hugging Face, Gradio public URLs, or image recognition.
+
+### Live API demo page
+
+Open the configurable live API page:
+
+```text
+web/live-api-demo.html
+```
+
+On GitHub Pages, use the floating **「即時模型推理 Demo」** button on the main page, or open:
+
+```text
+https://smallweiweihsu.github.io/genai-final-anti-scam/live-api-demo.html
+```
+
+The page can store the backend URL in browser `localStorage` as `ANTI_SCAM_API_BASE_URL`, so after Render / Railway deployment you can enter a public URL such as:
+
+```text
+https://genai-anti-scam-api.onrender.com
+```
+
+### Render deployment steps
+
+1. Confirm `backend/app.py` can run locally.
+2. Confirm `backend/requirements.txt` exists.
+3. Confirm `backend/phishing_model/` contains:
+   - `phishing_classifier.pkl`
+   - `vectorizer.pkl`
+   - `metrics.json`
+4. Commit and push to GitHub.
+5. Go to Render and create a Web Service.
+6. Connect the GitHub repo.
+7. Set root directory to `backend` when configuring manually.
+8. Use build command:
+   ```bash
+   pip install -r requirements.txt
+   ```
+9. Use start command:
+   ```bash
+   gunicorn app:app
+   ```
+10. Set environment variable:
+   ```text
+   ALLOWED_ORIGINS=https://smallweiweihsu.github.io,https://smallweiweihsu.github.io/genai-final-anti-scam,http://localhost:5501,http://127.0.0.1:5501
+   ```
+11. Deploy and copy the public backend URL.
+12. Open `live-api-demo.html` and set API URL to the Render URL.
+13. Test the analysis function.
+
+`render.yaml` is placed at the repository root because Render Blueprint discovery expects it there. The service still uses `rootDir: backend` so the actual backend build happens inside `backend/`.
+
+### Free plan cold start warning
+
+Render free services may sleep after inactivity. The first API request can take longer while the backend wakes up. For a stable presentation recording, open the API URL once before recording or presenting to wake the service.
+
+### Model artifact strategy
+
+For the final project demo, Strategy A is the most stable if the `.pkl` files are small and contain no sensitive data:
+
+- Commit `backend/phishing_model/phishing_classifier.pkl`.
+- Commit `backend/phishing_model/vectorizer.pkl`.
+- Commit `backend/phishing_model/metrics.json`.
+
+> 此模型檔僅供期末展示，不含 API key 或個資；正式部署不建議將模型權重放 public repo。
+
+The safer production-style Strategy B is to keep `.pkl` files outside GitHub and provide them through private storage, release artifacts, or deployment platform storage. This is more secure but more complex and easier to break during a final presentation.
+
+Current `.gitignore` excludes `*.pkl`. If you choose Strategy A, add an exception only after confirming you want to publish the model files:
+
+```gitignore
+*.pkl
+!backend/phishing_model/phishing_classifier.pkl
+!backend/phishing_model/vectorizer.pkl
+```
+
+Do not push `.env`, API keys, private data, raw phishing URLs, or sensitive screenshots.
