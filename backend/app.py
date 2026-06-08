@@ -1,4 +1,4 @@
-﻿import json
+import json
 import os
 import re
 from pathlib import Path
@@ -7,7 +7,6 @@ from urllib.parse import urlparse
 import joblib
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_DIR = BASE_DIR / "phishing_model"
@@ -22,7 +21,6 @@ ALLOWED_ORIGINS = os.environ.get(
 
 app = Flask(__name__)
 CORS(app, origins=ALLOWED_ORIGINS)
-
 
 STRICT_OFFICIAL_DOMAINS = {
     "gov.tw", "edu.tw", "thsrc.com.tw", "railway.gov.tw", "tra.gov.tw",
@@ -42,7 +40,6 @@ TRUSTED_SERVICE_DOMAINS = {
 SHORT_URL_DOMAINS = {
     "bit.ly", "tinyurl.com", "reurl.cc", "lihi.cc", "ppt.cc", "goo.gl", "t.co"
 }
-
 
 classifier = None
 vectorizer = None
@@ -85,17 +82,17 @@ def extract_domain(value):
     if not value:
         return ""
 
-    value = value.strip()
+    value = str(value).strip()
 
-    if "@" in value and not value.startswith("http"):
-        value = value.split("@")[-1]
+    if "@" in value and not value.lower().startswith(("http://", "https://")):
+        value = value.rsplit("@", 1)[-1]
 
-    if not value.startswith("http"):
+    if not value.lower().startswith(("http://", "https://")):
         value = "https://" + value
 
     try:
         parsed = urlparse(value)
-        domain = parsed.netloc.lower()
+        domain = (parsed.hostname or "").lower().strip().rstrip(".")
         if domain.startswith("www."):
             domain = domain[4:]
         return domain
@@ -106,8 +103,11 @@ def extract_domain(value):
 def domain_matches(domain, allowed_domains):
     if not domain:
         return []
+
+    domain = str(domain).lower().strip().rstrip(".")
     matched = []
     for allowed in allowed_domains:
+        allowed = str(allowed).lower().strip().rstrip(".")
         if domain == allowed or domain.endswith("." + allowed):
             matched.append(allowed)
     return matched
@@ -144,9 +144,10 @@ def analyze_rule_indicators(text, sender_domain, url_domains):
         indicators.append("急迫語氣")
         methods.append("製造急迫感")
 
-    if any(k in lower for k in ["停用", "凍結", "鎖定", "異常登入", "suspend", "locked"]):
+    if any(k in lower for k in ["停用", "凍結", "鎖定", "異常登入", "suspend", "suspended", "locked"]):
         indicators.append("帳戶威脅")
         methods.append("威脅帳戶停用")
+        strong.append("帳戶停用威脅")
 
     if any(k in lower for k in ["密碼", "驗證碼", "信用卡", "身分證", "帳號密碼", "password", "credit card"]):
         indicators.append("敏感資料要求")
@@ -215,24 +216,68 @@ def build_response(subject, sender, body):
 
     indicators, methods, strong = analyze_rule_indicators(text, sender_domain, url_domains)
 
+    if domain_mismatch:
+        indicators.append("寄件者與連結網域不一致")
+        strong.append("寄件者與 URL 網域不一致")
+
+    strong = list(dict.fromkeys(strong))
+    has_short_url = any(domain_matches(domain, SHORT_URL_DOMAINS) for domain in url_domains)
+    has_trusted_domain = bool(matched_official or matched_trusted)
     risk_score = round(phishing_probability * 100)
     postprocess_notes = []
 
-    if is_phishing:
+    if strong:
+        postprocess_notes.append(f"偵測到強危險特徵：{', '.join(strong)}，不套用可信網域降權。")
+    if domain_mismatch:
+        postprocess_notes.append("寄件者網域與連結網域不一致，不套用可信網域降權。")
+    if has_short_url:
+        postprocess_notes.append("信件含短網址，不套用可信網域降權。")
+
+    can_trusted_downgrade = (
+        not is_phishing
+        and phishing_probability < 0.5
+        and has_trusted_domain
+        and not strong
+        and not domain_mismatch
+        and not has_short_url
+    )
+    official_informational_message = (
+        bool(matched_official)
+        and not url_domains
+        and not strong
+        and not domain_mismatch
+        and not has_short_url
+        and not any(k in text.lower() for k in ["登入", "下載", "附件", "密碼", "驗證碼", "信用卡", "付款", "繳費", "verify", "password", "download"])
+    )
+
+    if official_informational_message:
+        risk_score = min(risk_score, 25)
+        postprocess_notes.append("寄件者為解析後完全符合的官方/教育網域，且內容無連結、無強危險特徵、無敏感操作要求；判定為資訊型通知並降為低風險。")
+    elif phishing_probability >= 0.7 or is_phishing:
         risk_score = max(risk_score, 70)
-        postprocess_notes.append("模型判定為 phishing，因此維持高風險邏輯。")
+        postprocess_notes.append("模型判定為 phishing 或 phishing_probability >= 0.7，因此維持高風險且不套用可信網域降權。")
+    elif 0.4 <= phishing_probability < 0.7:
+        risk_score = max(risk_score, 40)
+        if can_trusted_downgrade:
+            risk_score = max(25, min(risk_score, 45 if matched_official else 55))
+            postprocess_notes.append("模型機率為中等且命中解析後的可信官方網域、無強危險特徵、無網域不一致、無短網址，因此僅有限降權。")
+        elif has_trusted_domain:
+            postprocess_notes.append("雖命中可信網域，但因模型機率不低或存在其他風險條件，未降到低風險。")
+        else:
+            postprocess_notes.append("未命中可信網域且 phishing_probability 為中等，維持中風險。")
     else:
-        if matched_official and not strong and not domain_mismatch:
-            risk_score = min(risk_score, 35)
-            postprocess_notes.append("命中官方或教育等可信網域，且未偵測到強危險特徵，因此降低最終風險。")
-        elif matched_trusted and not strong and not domain_mismatch:
-            risk_score = min(risk_score, 45)
-            postprocess_notes.append("命中常見服務網域，但商業平台仍可能被仿冒，因此僅部分降權。")
-        elif strong:
-            postprocess_notes.append(f"偵測到強危險特徵：{', '.join(strong)}，因此不套用可信網域降權。")
-        elif domain_mismatch:
-            indicators.append("寄件者與連結網域不一致")
-            postprocess_notes.append("寄件者網域與連結網域不一致，因此不套用降權。")
+        if strong or domain_mismatch or has_short_url:
+            risk_score = max(risk_score, 40)
+            postprocess_notes.append("雖 phishing_probability 較低，但存在強危險特徵、網域不一致或短網址，至少維持中風險。")
+        elif can_trusted_downgrade:
+            risk_score = min(risk_score, 25)
+            postprocess_notes.append("命中解析後的可信官方網域且無強危險特徵、無網域不一致、無短網址，因此降為低風險。")
+        else:
+            risk_score = min(risk_score, 39)
+            if has_trusted_domain:
+                postprocess_notes.append("命中可信網域，但未完全符合降權條件，僅依模型低機率維持低風險。")
+            else:
+                postprocess_notes.append("phishing_probability 較低且未偵測強危險特徵，維持低風險；未因未列名網域額外降權。")
 
     if risk_score >= 70:
         risk_level = "high"

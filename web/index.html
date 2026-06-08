@@ -1,4 +1,6 @@
-<!doctype html> <html lang="zh-Hant"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" /> <title>看懂可疑信件 - AI 輔助釣魚郵件辨識互動介面</title> <link rel="preconnect" href="https://fonts.googleapis.com" /> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" /> <script type="module" crossorigin src="./assets/index-B3Xw4hRC.js"></script> <link rel="stylesheet" crossorigin href="./assets/index-BMOoP9BW.css">
+<!doctype html>
+
+<html lang="zh-Hant"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" /> <title>看懂可疑信件 - AI 輔助釣魚郵件辨識互動介面</title> <link rel="preconnect" href="https://fonts.googleapis.com" /> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" /> <script type="module" crossorigin src="./assets/index-B3Xw4hRC.js"></script> <link rel="stylesheet" crossorigin href="./assets/index-BMOoP9BW.css">
 <style>
   .homepage-api-note {
     margin-top: 0.75rem;
@@ -88,20 +90,26 @@
       return Math.round((Number(value) || 0) * 100);
     }
 
-    function riskLevelText(data) {
-      if (data.risk_level_zh) return data.risk_level_zh;
-      const level = String(data.risk_level || "").toLowerCase();
-      if (["high", "danger", "dangerous", "危險", "高風險"].includes(level)) return "危險";
-      if (["medium", "warning", "suspicious", "可疑", "中風險"].includes(level)) return "可疑";
-      if (["low", "safe", "安全", "低風險"].includes(level)) return "安全";
-      const score = numericScore(data.risk_score);
-      return score >= 70 ? "危險" : score >= 35 ? "可疑" : "安全";
+    function getRiskLevelFromApi(data) {
+      const score = Number(data.risk_score ?? 0);
+      const zh = data.risk_level_zh || "";
+      const level = data.risk_level || "";
+
+      if (level === "high" || zh.includes("高") || score >= 70) return "high";
+      if (level === "medium" || zh.includes("中") || score >= 40) return "medium";
+      return "low";
+    }
+
+    function riskLevelText(level) {
+      if (level === "high") return "高風險";
+      if (level === "medium") return "中風險";
+      return "低風險";
     }
 
     function riskTitle(level) {
-      if (level === "危險") return "高度疑似釣魚郵件";
-      if (level === "可疑") return "具有潛在詐騙風險";
-      return "安全信件（無明顯特徵）";
+      if (level === "high") return "高風險信件";
+      if (level === "medium") return "中風險信件";
+      return "低風險 / 暫無明顯高危險特徵";
     }
 
     function pillList(items, className) {
@@ -114,16 +122,22 @@
         .join("");
     }
 
-    function checklist(items) {
+    function checklist(items, level) {
       const values = asArray(items);
       if (!values.length) {
         values.push("透過官方網站、官方 App 或可信任客服管道再次確認。 ");
       }
+      const stateClass = level === "high"
+        ? "bg-destructive/5 border-destructive/20 text-destructive"
+        : level === "medium"
+          ? "bg-amber-500/5 border-amber-500/20 text-amber-500"
+          : "bg-emerald-500/5 border-emerald-500/10 text-emerald-500";
+      const symbol = level === "low" ? "✓" : "!";
       return values
         .map(
           (item) => `
-            <div class="flex items-start space-x-3 text-sm bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3">
-              <span class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5">✓</span>
+            <div class="flex items-start space-x-3 text-sm ${stateClass} border rounded-xl p-3">
+              <span class="h-5 w-5 shrink-0 mt-0.5">${symbol}</span>
               <span class="text-foreground/90 font-medium">${escapeHtml(formatValue(item))}</span>
             </div>
           `,
@@ -211,22 +225,23 @@
       const data = payload.result || payload;
       const resultColumn = findResultColumn(section);
       if (!resultColumn) return;
-      const level = riskLevelText(data);
+      const level = getRiskLevelFromApi(data);
+      const levelText = riskLevelText(level);
       const score = numericScore(data.risk_score);
       const confidence = confidencePercent(data.confidence_score);
       const phishing = phishingPercent(data.phishing_probability);
-      const icon = level === "危險" ? "!" : level === "可疑" ? "?" : "✓";
-      const iconClass = level === "危險"
+      const icon = level === "high" ? "!" : level === "medium" ? "?" : "✓";
+      const iconClass = level === "high"
         ? "bg-destructive/10 text-destructive border border-destructive/20"
-        : level === "可疑"
+        : level === "medium"
           ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
           : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
-      const badgeClass = level === "危險"
+      const badgeClass = level === "high"
         ? "bg-destructive/20 text-destructive"
-        : level === "可疑"
+        : level === "medium"
           ? "bg-amber-500/20 text-amber-500"
           : "bg-emerald-500/20 text-emerald-500";
-      const barClass = score > 70 ? "bg-destructive" : score > 35 ? "bg-amber-500" : "bg-emerald-500";
+      const barClass = level === "high" ? "bg-destructive" : level === "medium" ? "bg-amber-500" : "bg-emerald-500";
 
       resultColumn.innerHTML = `
         <div class="glass-panel rounded-2xl p-6 md:p-8 border border-white/10 space-y-6 animate-in fade-in duration-300">
@@ -236,7 +251,7 @@
               <div>
                 <div class="flex items-center space-x-2">
                   <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">評估結果</span>
-                  <span class="text-xs font-bold px-2 py-0.5 rounded ${badgeClass}">${escapeHtml(level)}</span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded ${badgeClass}">${escapeHtml(levelText)}</span>
                 </div>
                 <h3 class="text-xl font-extrabold text-foreground mt-1">${escapeHtml(riskTitle(level))}</h3>
                 <p class="text-xs text-muted-foreground mt-1">資料來源：Render Flask API 真實模型回傳</p>
@@ -278,7 +293,7 @@
 
           <div class="space-y-3 pt-2">
             <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">安全行動建議</span>
-            <div class="space-y-2.5">${checklist(data.safe_actions)}</div>
+            <div class="space-y-2.5">${checklist(data.safe_actions, level)}</div>
           </div>
 
           <div class="space-y-2 pt-2">
