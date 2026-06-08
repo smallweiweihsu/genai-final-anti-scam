@@ -1,1272 +1,308 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="zh-Hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-    <title>Live API 釣魚信件分析測試</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #071016;
-        --panel: #0d1822;
-        --panel-2: #111f2b;
-        --text: #edf7ff;
-        --muted: #98a8b7;
-        --line: rgba(139, 173, 196, 0.22);
-        --cyan: #42d9f5;
-        --green: #5df2aa;
-        --amber: #f5c451;
-        --red: #ff6874;
-        --shadow: 0 24px 80px rgba(0, 0, 0, 0.38);
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-    <title>即時模型推理 Demo - 看懂可疑信件</title>
-    <style>
-      :root {
-        color-scheme: dark;
-        --bg: #070a12;
-        --panel: rgba(17, 24, 39, 0.86);
-        --panel-strong: #111827;
-        --border: rgba(124, 58, 237, 0.32);
-        --text: #f8fafc;
-        --muted: #a7b0c0;
-        --primary: #8b5cf6;
-        --primary-strong: #7c3aed;
-        --danger: #fb7185;
-        --warning: #facc15;
-        --safe: #4ade80;
-      }
-
-      * { box-sizing: border-box; }
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-        background:
-          radial-gradient(circle at 20% 10%, rgba(66, 217, 245, 0.14), transparent 28rem),
-          linear-gradient(135deg, #071016 0%, #0b1720 48%, #08121a 100%);
-        color: var(--text);
-        font-family: Inter, "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      }
-
-      a {
-        color: inherit;
-      }
-
-      .shell {
-        width: min(1180px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 32px 0 44px;
-      }
-
-      header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        margin-bottom: 28px;
-      }
-
-      .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-
-      .mark {
-        display: grid;
-        width: 42px;
-        height: 42px;
-        place-items: center;
-        border: 1px solid rgba(66, 217, 245, 0.45);
-        border-radius: 8px;
-        background: linear-gradient(145deg, rgba(66, 217, 245, 0.16), rgba(93, 242, 170, 0.08));
-        box-shadow: 0 0 28px rgba(66, 217, 245, 0.16);
-      }
-
-      .mark svg {
-        width: 24px;
-        height: 24px;
-      }
-
-      h1,
-      h2,
-      h3,
-      p {
-        margin: 0;
-      }
-
-      h1 {
-        font-size: clamp(1.85rem, 4vw, 3.9rem);
-        line-height: 1.04;
-        letter-spacing: 0;
-        max-width: 780px;
-      }
-
-      .brand strong,
-      .status strong {
-        font-size: 0.95rem;
-      }
-
-      .brand span,
-      .status span,
-      .hero p,
-      label,
-      .hint,
-      .metric span,
-      .section-title span,
-      .error-box {
-        color: var(--muted);
-      }
-
-      .status {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        min-height: 38px;
-        padding: 9px 12px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: rgba(13, 24, 34, 0.78);
-      }
-
-      .dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 999px;
-        background: var(--amber);
-        box-shadow: 0 0 18px currentColor;
-      }
-
-      .dot.ok {
-        background: var(--green);
-      }
-
-      .dot.fail {
-        background: var(--red);
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
-        align-items: end;
-        gap: 24px;
-        margin-bottom: 24px;
-      }
-
-      .hero p {
-        max-width: 680px;
-        margin-top: 16px;
-        font-size: 1rem;
-        line-height: 1.75;
-      }
-
-      .api-card {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: rgba(13, 24, 34, 0.84);
-        box-shadow: var(--shadow);
-        padding: 18px;
-      }
-
-      .api-card code {
-        display: block;
-        overflow-wrap: anywhere;
-        margin-top: 10px;
-        color: var(--cyan);
-        font-size: 0.9rem;
-      }
-
-      .workspace {
-        display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-        gap: 20px;
-      }
-
-      .panel {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: rgba(13, 24, 34, 0.9);
-        box-shadow: var(--shadow);
-      }
-
-      .panel-inner {
-        padding: 20px;
-      }
-
-      .section-title {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding-bottom: 16px;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .section-title h2 {
-        font-size: 1.05rem;
-      }
-
-      form {
-        display: grid;
-        gap: 16px;
-        margin-top: 18px;
-      }
-
-      label {
-        display: grid;
-        gap: 8px;
-        font-size: 0.92rem;
-        font-weight: 600;
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-        font-family: Inter, "Noto Sans TC", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background:
-          radial-gradient(circle at top left, rgba(124, 58, 237, 0.25), transparent 34rem),
-          radial-gradient(circle at bottom right, rgba(30, 58, 138, 0.26), transparent 32rem),
-          var(--bg);
-        color: var(--text);
-      }
-
-      main {
-        width: min(1120px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 40px 0 56px;
-      }
-
-      a { color: #c4b5fd; }
-
-      .top-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 24px;
-        color: #ddd6fe;
-        text-decoration: none;
-      }
-
-      .hero,
-      .card {
-        border: 1px solid var(--border);
-        border-radius: 24px;
-        background: var(--panel);
-        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
-      }
-
-      .hero { padding: 32px; margin-bottom: 24px; }
-      .hero h1 { margin: 0 0 12px; font-size: clamp(2rem, 5vw, 4rem); line-height: 1.05; }
-      .hero p { margin: 0; color: var(--muted); font-size: 1.05rem; line-height: 1.7; }
-
-      .grid {
-        display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-        gap: 24px;
-      }
-
-      .card { padding: 24px; }
-      .card h2 { margin-top: 0; }
-
-      label {
-        display: block;
-        margin: 16px 0 8px;
-        color: #dbeafe;
-        font-weight: 700;
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      }
-
-      input,
-      textarea {
-        width: 100%;
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-        border: 1px solid rgba(139, 173, 196, 0.3);
-        border-radius: 8px;
-        background: #09131b;
-        color: var(--text);
-        font: inherit;
-        line-height: 1.55;
-        outline: none;
-        padding: 12px 13px;
-        transition: border-color 160ms ease, box-shadow 160ms ease;
-      }
-
-      textarea {
-        min-height: 220px;
-        resize: vertical;
-      }
-
-      input:focus,
-      textarea:focus {
-        border-color: rgba(66, 217, 245, 0.72);
-        box-shadow: 0 0 0 3px rgba(66, 217, 245, 0.14);
-      }
-
-      button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        min-height: 46px;
-        border: 0;
-        border-radius: 8px;
-        background: linear-gradient(135deg, var(--cyan), var(--green));
-        color: #061015;
-        cursor: pointer;
-        font: inherit;
-        font-weight: 800;
-        padding: 12px 18px;
-      }
-
-      button:disabled {
-        cursor: wait;
-        filter: grayscale(0.25);
-        opacity: 0.72;
-      }
-
-      .results {
-        display: grid;
-        gap: 16px;
-        margin-top: 18px;
-      }
-
-      .risk-banner {
-        display: grid;
-        gap: 8px;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: var(--panel-2);
-        padding: 18px;
-      }
-
-      .risk-banner.high {
-        border-color: rgba(255, 104, 116, 0.55);
-        background: linear-gradient(135deg, rgba(255, 104, 116, 0.22), rgba(17, 31, 43, 0.92));
-      }
-
-      .risk-banner.medium {
-        border-color: rgba(245, 196, 81, 0.58);
-        background: linear-gradient(135deg, rgba(245, 196, 81, 0.2), rgba(17, 31, 43, 0.92));
-      }
-
-      .risk-banner.low {
-        border-color: rgba(93, 242, 170, 0.48);
-        background: linear-gradient(135deg, rgba(93, 242, 170, 0.16), rgba(17, 31, 43, 0.92));
-      }
-
-      .risk-banner strong {
-        font-size: 1.8rem;
-      }
-
-      .metrics {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-      }
-
-      .metric {
-        min-width: 0;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #09131b;
-        padding: 13px;
-      }
-
-      .metric strong {
-        display: block;
-        margin-top: 6px;
-        font-size: 1.3rem;
-      }
-
-      .tag-row,
-      .checklist {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 10px;
-      }
-
-      .tag {
-        border: 1px solid rgba(66, 217, 245, 0.36);
-        border-radius: 999px;
-        background: rgba(66, 217, 245, 0.1);
-        color: #c9f7ff;
-        padding: 7px 10px;
-        font-size: 0.88rem;
-        font-weight: 700;
-      }
-
-      .info-block {
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #09131b;
-        padding: 15px;
-      }
-
-      .info-block h3 {
-        margin-bottom: 9px;
-        font-size: 0.95rem;
-      }
-
-      .info-block p,
-      .checklist li {
-        color: #c9d7e3;
-        line-height: 1.65;
-      }
-
-      .checklist {
-        display: grid;
-        padding-left: 1.2rem;
-      }
-
-      pre {
-        max-height: 340px;
-        overflow: auto;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        background: #050b10;
-        color: #c8f4ff;
-        font-size: 0.84rem;
-        line-height: 1.55;
-        margin: 0;
-        padding: 14px;
-      }
-
-      .empty,
-      .error-box {
-        border: 1px dashed rgba(139, 173, 196, 0.32);
-        border-radius: 8px;
-        background: rgba(9, 19, 27, 0.72);
-        padding: 18px;
-        line-height: 1.7;
-      }
-
-      .error-box {
-        border-color: rgba(255, 104, 116, 0.52);
-        color: #ffd0d4;
-      }
-
-      @media (max-width: 900px) {
-        header,
-        .hero,
-        .workspace {
-          grid-template-columns: 1fr;
-        }
-
-        header {
-          align-items: flex-start;
-          flex-direction: column;
-        }
-
-        .metrics {
-          grid-template-columns: 1fr;
-        }
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-        border: 1px solid rgba(148, 163, 184, 0.28);
-        border-radius: 16px;
-        background: rgba(15, 23, 42, 0.82);
-        color: var(--text);
-        padding: 13px 14px;
-        font: inherit;
-        outline: none;
-      }
-
-      textarea { min-height: 220px; resize: vertical; line-height: 1.6; }
-      input:focus, textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.18); }
-
-      .button-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
-
-      button {
-        border: 0;
-        border-radius: 999px;
-        padding: 12px 18px;
-        color: white;
-        background: linear-gradient(135deg, var(--primary), var(--primary-strong));
-        font-weight: 800;
-        cursor: pointer;
-      }
-
-      button.secondary { background: rgba(148, 163, 184, 0.18); color: #e2e8f0; }
-      button:disabled { cursor: wait; opacity: 0.7; }
-
-      .endpoint {
-        overflow-wrap: anywhere;
-        border: 1px solid rgba(148, 163, 184, 0.24);
-        background: rgba(15, 23, 42, 0.78);
-        border-radius: 14px;
-        padding: 12px;
-        color: #bfdbfe;
-        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      }
-
-      .result-box {
-        margin-top: 16px;
-        padding: 18px;
-        border-radius: 20px;
-        background: rgba(15, 23, 42, 0.72);
-        border: 1px solid rgba(148, 163, 184, 0.22);
-      }
-
-      .risk-number { font-size: 3rem; font-weight: 900; margin: 8px 0; }
-      .risk-bar { height: 14px; border-radius: 999px; overflow: hidden; background: rgba(148, 163, 184, 0.22); }
-      .risk-fill { height: 100%; width: 0; background: var(--safe); transition: width 0.3s ease; }
-      .muted { color: var(--muted); }
-      .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-      .pill { padding: 6px 10px; border-radius: 999px; background: rgba(124, 58, 237, 0.18); color: #ddd6fe; border: 1px solid rgba(124, 58, 237, 0.28); }
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-      .detail-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
-      .detail-key { color: #bfdbfe; font-weight: 800; }
-      .detail-value { color: #e2e8f0; overflow-wrap: anywhere; }
->>>>>>> theirs
-=======
-      .detail-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
-      .detail-key { color: #bfdbfe; font-weight: 800; }
-      .detail-value { color: #e2e8f0; overflow-wrap: anywhere; }
->>>>>>> theirs
-=======
-      .detail-row { display: grid; grid-template-columns: 190px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
-      .detail-key { color: #bfdbfe; font-weight: 800; }
-      .detail-value { color: #e2e8f0; overflow-wrap: anywhere; }
->>>>>>> theirs
-      pre { white-space: pre-wrap; overflow-wrap: anywhere; color: #dbeafe; }
-
-      @media (max-width: 860px) {
-        .grid { grid-template-columns: 1fr; }
-        .hero { padding: 24px; }
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      }
-    </style>
-  </head>
-  <body>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-    <main class="shell">
-      <header>
-        <div class="brand">
-          <div class="mark" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 3.2 19 6v5.5c0 4.4-2.8 7.7-7 9.3-4.2-1.6-7-4.9-7-9.3V6l7-2.8Z" stroke="currentColor" stroke-width="1.8" />
-              <path d="M8.2 12.2h7.6M12 8.4v7.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-            </svg>
-          </div>
-          <div>
-            <strong>AI 釣魚信件辨識</strong><br />
-            <span>本機 Flask Live API Demo</span>
-          </div>
-        </div>
-        <div class="status" id="apiStatus">
-          <span class="dot"></span>
-          <strong>尚未檢查 API</strong>
-        </div>
-      </header>
-
-      <section class="hero">
-        <div>
-          <h1>把可疑信件送進本機模型，即時看見風險判斷。</h1>
-          <p>這個頁面直接呼叫 localhost Flask backend，適合期末影片展示即時推理流程。GitHub Pages 主網站仍維持靜態展示。</p>
-        </div>
-        <aside class="api-card">
-          <strong>API Endpoint</strong>
-          <code>http://127.0.0.1:5000/api/analyze-email</code>
-        </aside>
-      </section>
-
-      <section class="workspace">
-        <div class="panel">
-          <div class="panel-inner">
-            <div class="section-title">
-              <h2>信件內容</h2>
-              <span>subject / sender / body</span>
-            </div>
-            <form id="emailForm">
-              <label>
-                信件主旨
-                <input id="subject" name="subject" autocomplete="off" value="您的帳戶將於 24 小時內停用，請立即完成驗證" />
-              </label>
-              <label>
-                寄件者
-                <input id="sender" name="sender" autocomplete="off" value="security-alert@paypa1-login.example" />
-              </label>
-              <label>
-                信件內容
-                <textarea id="body" name="body">親愛的用戶您好：
-
-我們偵測到您的帳戶發生異常登入。為避免帳戶被凍結，請在 24 小時內點擊以下連結完成驗證：
-https://paypa1-login.example/verify
-
-若逾期未完成，您的帳戶將被停用。請準備帳號密碼與 verification code 以確認身分。</textarea>
-              </label>
-              <button type="submit" id="analyzeButton">
-                <span>開始分析</span>
-              </button>
-              <p class="hint">請先啟動 Flask backend，再送出分析。</p>
-            </form>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-inner">
-            <div class="section-title">
-              <h2>分析結果</h2>
-              <span>model response</span>
-            </div>
-            <div class="results" id="results">
-              <div class="empty">尚未送出分析。結果會顯示風險等級、模型分數、可疑特徵與安全建議。</div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <script>
-      const API_BASE = "http://127.0.0.1:5000";
-      const form = document.querySelector("#emailForm");
-      const results = document.querySelector("#results");
-      const button = document.querySelector("#analyzeButton");
-      const apiStatus = document.querySelector("#apiStatus");
-
-      function escapeHtml(value) {
-        return String(value ?? "")
-          .replaceAll("&", "&amp;")
-          .replaceAll("<", "&lt;")
-          .replaceAll(">", "&gt;")
-          .replaceAll('"', "&quot;")
-          .replaceAll("'", "&#039;");
-      }
-
-      function formatPercent(value) {
-        const number = Number(value);
-        if (!Number.isFinite(number)) return "-";
-        return `${Math.round(number * 100)}%`;
-      }
-
-      function tagList(items) {
-        if (!Array.isArray(items) || items.length === 0) {
-          return '<span class="tag">未偵測到明確特徵</span>';
-        }
-        return items.map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("");
-      }
-
-      function checklist(items) {
-        if (!Array.isArray(items) || items.length === 0) {
-          return "<li>暫無建議，仍請透過官方管道確認。</li>";
-        }
-        return items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
-      }
-
-      function setStatus(state, text) {
-        const dotClass = state === "ok" ? "dot ok" : state === "fail" ? "dot fail" : "dot";
-        apiStatus.innerHTML = `<span class="${dotClass}"></span><strong>${escapeHtml(text)}</strong>`;
-      }
-
-      function renderError(message) {
-        results.innerHTML = `
-          <div class="error-box">
-            <strong>${escapeHtml(message)}</strong><br />
-            請確認 Flask 後端是否已啟動。<br />
-            請確認 http://127.0.0.1:5000 可正常開啟。
-          </div>
-        `;
-      }
-
-      function renderResult(data) {
-        const riskClass = data.risk_level || "medium";
-        const riskText = data.risk_level_zh || data.risk_level || "未知";
-        results.innerHTML = `
-          <div class="risk-banner ${escapeHtml(riskClass)}">
-            <span>風險等級</span>
-            <strong>${escapeHtml(riskText)}</strong>
-            <p>${escapeHtml(data.explanation_for_general_users || "")}</p>
-          </div>
-
-          <div class="metrics">
-            <div class="metric"><span>risk_score</span><strong>${escapeHtml(data.risk_score ?? "-")}</strong></div>
-            <div class="metric"><span>confidence_score</span><strong>${formatPercent(data.confidence_score)}</strong></div>
-            <div class="metric"><span>phishing_probability</span><strong>${formatPercent(data.phishing_probability)}</strong></div>
-          </div>
-
-          <div class="info-block">
-            <h3>可疑特徵 indicators</h3>
-            <div class="tag-row">${tagList(data.indicators)}</div>
-          </div>
-
-          <div class="info-block">
-            <h3>操弄手法 manipulation_methods</h3>
-            <div class="tag-row">${tagList(data.manipulation_methods)}</div>
-          </div>
-
-          <div class="info-block">
-            <h3>個資風險</h3>
-            <p>${escapeHtml(data.personal_data_risk || "")}</p>
-          </div>
-
-          <div class="info-block">
-            <h3>付款風險</h3>
-            <p>${escapeHtml(data.payment_risk || "")}</p>
-          </div>
-
-          <div class="info-block">
-            <h3>安全建議</h3>
-            <ul class="checklist">${checklist(data.safe_actions)}</ul>
-          </div>
-
-          <div class="info-block">
-            <h3>原始 JSON</h3>
-            <pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>
-          </div>
-        `;
-      }
-
-      async function checkApiHealth() {
-        try {
-          const response = await fetch(`${API_BASE}/`);
-          const data = await response.json();
-          setStatus(data.model_loaded ? "ok" : "fail", data.model_loaded ? "API 已連線，模型已載入" : "API 已連線，模型未載入");
-        } catch (error) {
-          setStatus("fail", "API 尚未連線");
-        }
-      }
-
-      form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        button.disabled = true;
-        button.querySelector("span").textContent = "分析中";
-
-        const payload = {
-          subject: document.querySelector("#subject").value,
-          sender: document.querySelector("#sender").value,
-          body: document.querySelector("#body").value,
-        };
-
-        try {
-          const response = await fetch(`${API_BASE}/api/analyze-email`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          });
-          const data = await response.json().catch(() => ({}));
-          if (!response.ok) {
-            throw new Error(data.error || `API 回傳 ${response.status}`);
-          }
-          setStatus("ok", "API 分析完成");
-          renderResult(data);
-        } catch (error) {
-          setStatus("fail", "API 分析失敗");
-          renderError(error.message || "API 呼叫失敗");
-        } finally {
-          button.disabled = false;
-          button.querySelector("span").textContent = "開始分析";
-        }
-      });
-
-      checkApiHealth();
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-    <main>
-      <a class="top-link" href="./index.html">← 回主網站</a>
-
-      <section class="hero">
-        <h1>即時模型推理 Demo</h1>
-        <p>
-          這個頁面會呼叫公開 Flask backend 的 <code>/api/analyze-email</code>，使用目前的 TF-IDF + Logistic Regression 模型進行即時釣魚郵件風險分析。部署完成後可把 API URL 改成 Render / Railway 公開網址，不需要本機一直執行 <code>python app.py</code>。
-        </p>
-      </section>
-
-      <div class="grid">
-        <section class="card">
-          <h2>1. API URL 設定</h2>
-          <p class="muted">部署前預設使用本機 Flask；部署後請輸入公開後端網址，例如 <code>https://genai-anti-scam-api.onrender.com</code>。</p>
-          <label for="apiBaseUrl">API Base URL</label>
-          <input id="apiBaseUrl" type="url" placeholder="https://genai-anti-scam-api.onrender.com" />
-          <div class="button-row">
-            <button id="saveApiUrlButton" type="button">儲存 API URL</button>
-            <button id="resetApiUrlButton" class="secondary" type="button">重設為 localhost</button>
-          </div>
-          <label>目前 API endpoint</label>
-          <div id="currentEndpoint" class="endpoint"></div>
-
-          <h2 style="margin-top: 28px;">2. 輸入信件內容</h2>
-          <label for="emailSubject">主旨</label>
-          <input id="emailSubject" value="您的帳戶即將被停用，請立即驗證" />
-
-          <label for="emailSender">寄件者</label>
-          <input id="emailSender" value="security-alert@example-login.com" />
-
-          <label for="emailBody">信件內容</label>
-          <textarea id="emailBody">親愛的使用者您好：
-
-我們偵測到您的帳戶有異常登入。請在 24 小時內點擊以下連結更新付款資訊並驗證帳戶，否則服務將被停用。
-
-https://bit.ly/account-verify-demo</textarea>
-          <div class="button-row">
-            <button id="analyzeButton" type="button">分析信件</button>
-            <button id="loadSafeExampleButton" class="secondary" type="button">載入正常信件範例</button>
-          </div>
-        </section>
-
-        <aside class="card">
-          <h2>分析結果</h2>
-          <p id="statusText" class="muted">尚未分析。請確認 API endpoint 後按下「分析信件」。</p>
-          <div id="resultBox" class="result-box" hidden>
-            <div class="muted">最終風險分數 risk_score</div>
-            <div id="riskNumber" class="risk-number">0</div>
-            <div class="risk-bar"><div id="riskFill" class="risk-fill"></div></div>
-            <div id="summaryPills" class="pill-row"></div>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-            <h3>後處理說明</h3>
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-            <h3>一般使用者說明</h3>
-            <p id="generalExplanation" class="muted"></p>
-            <h3>模型與後處理欄位</h3>
-            <div id="detailFields"></div>
-            <h3>可疑特徵 indicators</h3>
-            <ul id="indicatorsList"></ul>
-            <h3>詐騙話術 manipulation_methods</h3>
-            <ul id="manipulationMethodsList"></ul>
-            <h3>安全行動 safe_actions</h3>
-            <ul id="safeActionsList"></ul>
-            <h3>後處理說明 postprocess_notes</h3>
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-            <ul id="postprocessNotes"></ul>
-            <h3>原始 JSON</h3>
-            <pre id="rawJson"></pre>
-          </div>
-        </aside>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 釣魚信件辨識｜Live API Demo</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif;
+      background: #071018;
+      color: #e8f4ff;
+    }
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 36px 20px;
+    }
+    .hero {
+      padding: 32px;
+      border: 1px solid #1f3a4a;
+      border-radius: 24px;
+      background: #0b1a24;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: clamp(36px, 6vw, 72px);
+      line-height: 1.05;
+      margin: 0 0 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .card {
+      border: 1px solid #1f3a4a;
+      border-radius: 18px;
+      background: #0b1620;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      color: #9db7c8;
+      font-weight: 700;
+    }
+    input, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #29495a;
+      border-radius: 10px;
+      background: #071018;
+      color: #e8f4ff;
+      padding: 12px;
+      font-size: 15px;
+    }
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-top: 14px;
+      background: linear-gradient(90deg, #42d9f5, #72f0a6);
+      color: #061018;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #142431;
+      color: #e8f4ff;
+      border: 1px solid #29495a;
+      margin-left: 8px;
+    }
+    code, pre {
+      color: #6ee7ff;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border: 1px solid #2b5b6d;
+      border-radius: 999px;
+      margin: 4px 6px 4px 0;
+      color: #b9ecff;
+    }
+    .risk-high {
+      border-color: rgba(255, 104, 116, 0.8);
+      background: rgba(255, 104, 116, 0.16);
+    }
+    .risk-medium {
+      border-color: rgba(245, 196, 81, 0.8);
+      background: rgba(245, 196, 81, 0.16);
+    }
+    .risk-low {
+      border-color: rgba(100, 230, 160, 0.8);
+      background: rgba(100, 230, 160, 0.16);
+    }
+    .muted { color: #9db7c8; }
+    .api-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .api-row input { flex: 1; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <p class="muted">AI 釣魚信件辨識｜公開 Flask API Demo</p>
+      <h1>把可疑信件送進模型，即時看見風險判斷。</h1>
+      <p class="muted">此頁呼叫 Render 上的 Flask 後端，不需要本機開啟終端機。</p>
+
+      <label for="apiBaseUrlInput">API URL</label>
+      <div class="api-row">
+        <input id="apiBaseUrlInput" type="text" />
+        <button id="saveApiBaseUrlBtn" type="button">儲存 API URL</button>
+        <button id="resetApiBaseUrlBtn" class="secondary" type="button">恢復預設</button>
       </div>
+      <p class="muted">目前 endpoint：<code id="currentApiEndpoint"></code></p>
+      <p id="apiStatus" class="muted"></p>
+    </section>
+
+    <main class="grid">
+      <section class="card">
+        <h2>信件內容</h2>
+
+        <label for="subjectInput">信件主旨</label>
+        <input id="subjectInput" value="您的帳戶將於 24 小時內停用，請立即完成驗證" />
+
+        <label for="senderInput">寄件者</label>
+        <input id="senderInput" value="security-alert@paypal-login.example" />
+
+        <label for="bodyInput">信件內容</label>
+        <textarea id="bodyInput">親愛的用戶您好：
+
+我們偵測到您的帳戶登入異常。為避免帳戶停用，請於 24 小時內點擊以下連結重新驗證您的帳號與密碼。
+
+https://paypal-login.example/verify
+
+若未完成驗證，您的帳戶將會被暫停。</textarea>
+
+        <button id="analyzeBtn" type="button">開始分析</button>
+        <button id="clearBtn" class="secondary" type="button">清除結果</button>
+      </section>
+
+      <section class="card">
+        <h2>分析結果</h2>
+        <div id="resultBox" class="muted">尚未送出分析。</div>
+      </section>
     </main>
+  </div>
 
-    <script>
-      const DEFAULT_LOCAL_API_BASE_URL = "http://127.0.0.1:5000";
-      let API_BASE_URL =
-        window.ANTI_SCAM_API_BASE_URL ||
-        localStorage.getItem("ANTI_SCAM_API_BASE_URL") ||
-        DEFAULT_LOCAL_API_BASE_URL;
+  <script>
+    const DEFAULT_API_BASE_URL = "https://genai-final-anti-scam.onrender.com";
+    const LOCAL_STORAGE_KEY = "ANTI_SCAM_API_BASE_URL";
 
-      const apiBaseUrlInput = document.getElementById("apiBaseUrl");
-      const currentEndpoint = document.getElementById("currentEndpoint");
-      const saveApiUrlButton = document.getElementById("saveApiUrlButton");
-      const resetApiUrlButton = document.getElementById("resetApiUrlButton");
-      const analyzeButton = document.getElementById("analyzeButton");
-      const loadSafeExampleButton = document.getElementById("loadSafeExampleButton");
-      const statusText = document.getElementById("statusText");
-      const resultBox = document.getElementById("resultBox");
-      const riskNumber = document.getElementById("riskNumber");
-      const riskFill = document.getElementById("riskFill");
-      const summaryPills = document.getElementById("summaryPills");
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      const generalExplanation = document.getElementById("generalExplanation");
-      const detailFields = document.getElementById("detailFields");
-      const indicatorsList = document.getElementById("indicatorsList");
-      const manipulationMethodsList = document.getElementById("manipulationMethodsList");
-      const safeActionsList = document.getElementById("safeActionsList");
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      const postprocessNotes = document.getElementById("postprocessNotes");
-      const rawJson = document.getElementById("rawJson");
+    const $ = (id) => document.getElementById(id);
 
-      function normalizeApiBaseUrl(url) {
-        return String(url || "").trim().replace(/\/+$/, "");
-      }
+    function normalizeApiBaseUrl(value) {
+      return String(value || "").trim().replace(/\/+$/, "");
+    }
 
-      function getAnalyzeApiUrl() {
-        return `${API_BASE_URL}/api/analyze-email`;
-      }
+    function getApiBaseUrl() {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return normalizeApiBaseUrl(saved || DEFAULT_API_BASE_URL);
+    }
 
-      function renderEndpoint() {
-        apiBaseUrlInput.value = API_BASE_URL;
-        currentEndpoint.textContent = getAnalyzeApiUrl();
-      }
+    function getAnalyzeApiUrl() {
+      return `${getApiBaseUrl()}/api/analyze-email`;
+    }
 
-      function setStatus(message, isError = false) {
-        statusText.textContent = message;
-        statusText.style.color = isError ? "#fb7185" : "#a7b0c0";
-      }
+    function updateEndpointDisplay(message = "") {
+      $("apiBaseUrlInput").value = getApiBaseUrl();
+      $("currentApiEndpoint").textContent = getAnalyzeApiUrl();
+      $("apiStatus").textContent = message;
+    }
 
-      function getRiskColor(score) {
-        if (score >= 70) return "#fb7185";
-        if (score >= 40) return "#facc15";
-        return "#4ade80";
-      }
+    function list(items) {
+      if (!items || !items.length) return "<span class='muted'>無</span>";
+      return items.map((x) => `<span class="pill">${escapeHtml(String(x))}</span>`).join("");
+    }
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      function formatValue(value) {
-        if (Array.isArray(value)) {
-          return value.length ? value.join(", ") : "無";
-        }
-        if (typeof value === "boolean") {
-          return value ? "是" : "否";
-        }
-        if (typeof value === "number") {
-          return Number.isInteger(value) ? String(value) : value.toFixed(4);
-        }
-        if (value && typeof value === "object") {
-          return JSON.stringify(value);
-        }
-        return value || "無";
-      }
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-      function renderList(target, items, emptyText) {
-        target.innerHTML = "";
-        const values = Array.isArray(items) && items.length ? items : [emptyText];
-        values.forEach((text) => {
-          const item = document.createElement("li");
-          item.textContent = formatValue(text);
-          target.appendChild(item);
-        });
-      }
+    function renderResult(data) {
+      const risk = data.risk_level || "medium";
+      const boxClass = risk === "high" ? "risk-high" : risk === "low" ? "risk-low" : "risk-medium";
 
-      function renderDetailFields(result) {
-        detailFields.innerHTML = "";
-        const fields = [
-          ["risk_level_zh", result.risk_level_zh],
-          ["risk_score", result.risk_score],
-          ["confidence_score", result.confidence_score],
-          ["phishing_probability", result.phishing_probability],
-          ["personal_data_risk", result.personal_data_risk],
-          ["payment_risk", result.payment_risk],
-          ["matched_official_domains", result.matched_official_domains],
-          ["matched_trusted_domains", result.matched_trusted_domains],
-          ["sender_domain", result.sender_domain],
-          ["url_domains", result.url_domains],
-          ["domain_mismatch", result.domain_mismatch],
-        ];
+      $("resultBox").innerHTML = `
+        <div class="${boxClass}" style="padding:16px;border-radius:14px;border-width:1px;border-style:solid;">
+          <p class="muted">風險等級</p>
+          <h2>${escapeHtml(data.risk_level_zh || data.risk_level || "未知")}</h2>
+          <p>${escapeHtml(data.explanation_for_general_users || "")}</p>
+        </div>
 
-        fields.forEach(([key, value]) => {
-          const row = document.createElement("div");
-          row.className = "detail-row";
-          const keyEl = document.createElement("div");
-          keyEl.className = "detail-key";
-          keyEl.textContent = key;
-          const valueEl = document.createElement("div");
-          valueEl.className = "detail-value";
-          valueEl.textContent = formatValue(value);
-          row.append(keyEl, valueEl);
-          detailFields.appendChild(row);
-        });
-      }
+        <h3>模型原始判斷</h3>
+        <p>label：<code>${escapeHtml(data.label)}</code></p>
+        <p>phishing_probability：<code>${escapeHtml(data.phishing_probability)}</code></p>
+        <p>confidence_score：<code>${escapeHtml(data.confidence_score)}</code></p>
 
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-      function renderResult(result) {
-        resultBox.hidden = false;
-        const score = Number(result.risk_score ?? Math.round((result.phishing_probability || 0) * 100));
-        riskNumber.textContent = `${score}/100`;
-        riskNumber.style.color = getRiskColor(score);
-        riskFill.style.width = `${Math.max(0, Math.min(100, score))}%`;
-        riskFill.style.background = getRiskColor(score);
+        <h3>最終使用者風險</h3>
+        <p>risk_score：<code>${escapeHtml(data.risk_score)}</code></p>
 
-        summaryPills.innerHTML = "";
-        const pills = [
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-          `判斷：${result.label || (result.is_phishing ? "phishing" : "normal")}`,
-          `模型原始機率：${Math.round((result.phishing_probability || 0) * 100)}%`,
-          result.trusted_domain_detected ? "可信網域：有" : "可信網域：未偵測",
-          result.domain_mismatch ? "網域不一致：有" : "網域不一致：未偵測",
-          result.short_urls?.length ? `短網址：${result.short_urls.join(", ")}` : "短網址：未偵測",
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-          `風險等級：${result.risk_level_zh || "未提供"}`,
-          `判斷：${result.label || (result.is_phishing ? "phishing" : "normal")}`,
-          `信心：${Math.round((result.confidence_score || 0) * 100)}%`,
-          `模型原始機率：${Math.round((result.phishing_probability || 0) * 100)}%`,
-          result.domain_mismatch ? "網域不一致：有" : "網域不一致：未偵測",
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-        ];
-        pills.forEach((text) => {
-          const pill = document.createElement("span");
-          pill.className = "pill";
-          pill.textContent = text;
-          summaryPills.appendChild(pill);
+        <h3>可疑特徵</h3>
+        ${list(data.indicators)}
+
+        <h3>詐騙話術</h3>
+        ${list(data.manipulation_methods)}
+
+        <h3>個資風險</h3>
+        <p>${escapeHtml(data.personal_data_risk || "")}</p>
+
+        <h3>付款風險</h3>
+        <p>${escapeHtml(data.payment_risk || "")}</p>
+
+        <h3>安全行動</h3>
+        ${list(data.safe_actions)}
+
+        <h3>網域與後處理</h3>
+        <p>sender_domain：<code>${escapeHtml(data.sender_domain || "")}</code></p>
+        <p>url_domains：${list(data.url_domains)}</p>
+        <p>matched_official_domains：${list(data.matched_official_domains)}</p>
+        <p>matched_trusted_domains：${list(data.matched_trusted_domains)}</p>
+        <p>domain_mismatch：<code>${escapeHtml(data.domain_mismatch)}</code></p>
+        <p>postprocess_notes：${list(data.postprocess_notes)}</p>
+
+        <h3>原始 JSON</h3>
+        <pre>${escapeHtml(JSON.stringify(data, null, 2))}</pre>
+      `;
+    }
+
+    async function analyzeEmail() {
+      $("resultBox").innerHTML = "<span class='muted'>分析中，Render 免費方案冷啟動可能需要等待。</span>";
+
+      const payload = {
+        subject: $("subjectInput").value,
+        sender: $("senderInput").value,
+        body: $("bodyInput").value
+      };
+
+      try {
+        const response = await fetch(getAnalyzeApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
         });
 
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-        postprocessNotes.innerHTML = "";
-        const notes = result.postprocess_notes?.length ? result.postprocess_notes : ["後端未回傳額外後處理說明。"];
-        notes.forEach((note) => {
-          const item = document.createElement("li");
-          item.textContent = note;
-          postprocessNotes.appendChild(item);
-        });
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-        generalExplanation.textContent = result.explanation_for_general_users || "後端未回傳一般使用者說明。";
-        renderDetailFields(result);
-        renderList(indicatorsList, result.indicators, "後端未回傳 indicators。");
-        renderList(manipulationMethodsList, result.manipulation_methods, "後端未回傳 manipulation_methods。");
-        renderList(safeActionsList, result.safe_actions, "後端未回傳 safe_actions。");
-        renderList(postprocessNotes, result.postprocess_notes, "後端未回傳 postprocess_notes。");
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-
-        rawJson.textContent = JSON.stringify(result, null, 2);
-      }
-
-      saveApiUrlButton.addEventListener("click", () => {
-        const nextUrl = normalizeApiBaseUrl(apiBaseUrlInput.value);
-        if (!nextUrl) {
-          setStatus("請輸入 API Base URL。", true);
-          return;
-        }
-        API_BASE_URL = nextUrl;
-        localStorage.setItem("ANTI_SCAM_API_BASE_URL", API_BASE_URL);
-        renderEndpoint();
-        setStatus("API URL 已儲存。部署後如遇 Render 冷啟動，第一次請稍候。")
-      });
-
-      resetApiUrlButton.addEventListener("click", () => {
-        API_BASE_URL = DEFAULT_LOCAL_API_BASE_URL;
-        localStorage.setItem("ANTI_SCAM_API_BASE_URL", API_BASE_URL);
-        renderEndpoint();
-        setStatus("已重設為 localhost。")
-      });
-
-      loadSafeExampleButton.addEventListener("click", () => {
-        document.getElementById("emailSubject").value = "本週社團會議提醒";
-        document.getElementById("emailSender").value = "club@example.edu.tw";
-        document.getElementById("emailBody").value = "同學您好：提醒本週五下午三點在教室開會，會議資料已放在學校平台。若不方便出席請回信告知，謝謝。";
-      });
-
-      analyzeButton.addEventListener("click", async () => {
-        analyzeButton.disabled = true;
-        resultBox.hidden = true;
-        setStatus(`正在呼叫 ${getAnalyzeApiUrl()} ...`);
-
+        const text = await response.text();
+        let data;
         try {
-          const response = await fetch(getAnalyzeApiUrl(), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              subject: document.getElementById("emailSubject").value,
-              sender: document.getElementById("emailSender").value,
-              text: document.getElementById("emailBody").value,
-            }),
-          });
-          const result = await response.json();
-          if (!response.ok) {
-            throw new Error(result.message || result.error || `HTTP ${response.status}`);
-          }
-          setStatus("分析完成。")
-          renderResult(result);
-        } catch (error) {
-          setStatus(`API 呼叫失敗：${error.message}`, true);
-          resultBox.hidden = false;
-          rawJson.textContent = String(error.stack || error.message || error);
-          riskNumber.textContent = "--";
-          riskFill.style.width = "0";
-          summaryPills.innerHTML = "";
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-          generalExplanation.textContent = "";
-          detailFields.innerHTML = "";
-          indicatorsList.innerHTML = "";
-          manipulationMethodsList.innerHTML = "";
-          safeActionsList.innerHTML = "";
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-          postprocessNotes.innerHTML = "<li>請確認 Flask backend 已部署、API URL 正確，且 CORS ALLOWED_ORIGINS 包含 GitHub Pages 網址。</li>";
-        } finally {
-          analyzeButton.disabled = false;
+          data = JSON.parse(text);
+        } catch {
+          throw new Error(text || "API 回傳不是 JSON");
         }
-      });
 
-      renderEndpoint();
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-    </script>
-  </body>
+        if (!response.ok) {
+          throw new Error(data.error || data.model_error || `HTTP ${response.status}`);
+        }
+
+        renderResult(data);
+      } catch (error) {
+        $("resultBox").innerHTML = `
+          <div class="risk-high" style="padding:16px;border-radius:14px;border-width:1px;border-style:solid;">
+            <h3>無法連接模型 API</h3>
+            <p>請確認 API URL 是否正確，或 Render 後端是否仍在冷啟動。</p>
+            <p><code>${escapeHtml(error.message)}</code></p>
+          </div>
+        `;
+      }
+    }
+
+    $("saveApiBaseUrlBtn").addEventListener("click", () => {
+      const normalized = normalizeApiBaseUrl($("apiBaseUrlInput").value);
+      localStorage.setItem(LOCAL_STORAGE_KEY, normalized);
+      updateEndpointDisplay("API URL 已儲存");
+    });
+
+    $("resetApiBaseUrlBtn").addEventListener("click", () => {
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      updateEndpointDisplay("已恢復預設 API URL");
+    });
+
+    $("analyzeBtn").addEventListener("click", analyzeEmail);
+    $("clearBtn").addEventListener("click", () => {
+      $("resultBox").textContent = "尚未送出分析。";
+    });
+
+    updateEndpointDisplay();
+  </script>
+</body>
 </html>
