@@ -1,47 +1,379 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!doctype html> <html lang="zh-Hant"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" /> <title>看懂可疑信件 - AI 輔助釣魚郵件辨識互動介面</title> <link rel="preconnect" href="https://fonts.googleapis.com" /> <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /> <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" /> <script type="module" crossorigin src="./assets/index-B3Xw4hRC.js"></script> <link rel="stylesheet" crossorigin href="./assets/index-BMOoP9BW.css">
+<style>
+  .homepage-api-note {
+    margin-top: 0.75rem;
+    color: hsl(var(--muted-foreground));
+    font-size: 0.75rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+  .api-demo-floating-link {
+    position: fixed;
+    right: 18px;
+    bottom: 18px;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 16px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(135deg, #8b5cf6, #2563eb);
+    box-shadow: 0 16px 38px rgba(37, 99, 235, 0.34);
+    font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
+    font-weight: 800;
+    text-decoration: none;
+  }
+  .api-demo-floating-link:focus,
+  .api-demo-floating-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 18px 44px rgba(124, 58, 237, 0.42);
+  }
+</style>
+</head> <body class="dark"> <div id="root"></div> <a href="./live-api-demo.html" class="api-demo-floating-link" title="即時模型推理 Demo：顯示完整 API 回傳 JSON。">即時模型推理 Demo：完整 JSON</a>
+<script>
+  (() => {
+    const DEFAULT_API_BASE_URL = "https://genai-final-anti-scam.onrender.com";
+    const LOCAL_STORAGE_KEY = "ANTI_SCAM_API_BASE_URL";
+    const LOADING_MESSAGE = "模型分析中，Render 免費方案冷啟動可能需要數十秒。";
+    const CONNECTION_ERROR_MESSAGE = "無法連接模型 API。請確認 Render 後端是否啟動，或稍後再試。";
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>看懂可疑信件 - AI 輔助釣魚郵件辨識互動介面</title>    
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="./assets/index-B3Xw4hRC.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-BMOoP9BW.css">
+    function normalizeApiBaseUrl(value) {
+      return String(value || "").trim().replace(/\/+$/, "");
+    }
 
-    <style>
-      .api-demo-floating-link {
-        position: fixed;
-        right: 18px;
-        bottom: 18px;
-        z-index: 9999;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 16px;
-        border-radius: 999px;
-        color: #ffffff;
-        background: linear-gradient(135deg, #8b5cf6, #2563eb);
-        box-shadow: 0 16px 38px rgba(37, 99, 235, 0.34);
-        font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
-        font-weight: 800;
-        text-decoration: none;
+    function getApiBaseUrl() {
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      return normalizeApiBaseUrl(saved || DEFAULT_API_BASE_URL);
+    }
+
+    function getAnalyzeApiUrl() {
+      return `${getApiBaseUrl()}/api/analyze-email`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function asArray(value) {
+      if (Array.isArray(value)) return value;
+      if (value === null || value === undefined || value === "") return [];
+      return [value];
+    }
+
+    function formatValue(value) {
+      if (Array.isArray(value)) return value.length ? value.join(", ") : "無";
+      if (typeof value === "boolean") return value ? "是" : "否";
+      if (typeof value === "number") return Number.isInteger(value) ? String(value) : value.toFixed(4);
+      if (value && typeof value === "object") return JSON.stringify(value);
+      return value === null || value === undefined || value === "" ? "無" : String(value);
+    }
+
+    function numericScore(value) {
+      const number = Number(value);
+      if (!Number.isFinite(number)) return 0;
+      return Math.max(0, Math.min(100, number <= 1 ? number * 100 : number));
+    }
+
+    function confidencePercent(value) {
+      return Math.round((Number(value) || 0) * 100);
+    }
+
+    function phishingPercent(value) {
+      return Math.round((Number(value) || 0) * 100);
+    }
+
+    function riskLevelText(data) {
+      if (data.risk_level_zh) return data.risk_level_zh;
+      const level = String(data.risk_level || "").toLowerCase();
+      if (["high", "danger", "dangerous", "危險", "高風險"].includes(level)) return "危險";
+      if (["medium", "warning", "suspicious", "可疑", "中風險"].includes(level)) return "可疑";
+      if (["low", "safe", "安全", "低風險"].includes(level)) return "安全";
+      const score = numericScore(data.risk_score);
+      return score >= 70 ? "危險" : score >= 35 ? "可疑" : "安全";
+    }
+
+    function riskTitle(level) {
+      if (level === "危險") return "高度疑似釣魚郵件";
+      if (level === "可疑") return "具有潛在詐騙風險";
+      return "安全信件（無明顯特徵）";
+    }
+
+    function pillList(items, className) {
+      const values = asArray(items);
+      if (!values.length) {
+        return `<span class="px-2.5 py-1 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-foreground">無</span>`;
       }
-      .api-demo-floating-link:focus,
-      .api-demo-floating-link:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 18px 44px rgba(124, 58, 237, 0.42);
+      return values
+        .map((item) => `<span class="${className}">${escapeHtml(formatValue(item))}</span>`)
+        .join("");
+    }
+
+    function checklist(items) {
+      const values = asArray(items);
+      if (!values.length) {
+        values.push("透過官方網站、官方 App 或可信任客服管道再次確認。 ");
       }
-    </style>
-  </head>
+      return values
+        .map(
+          (item) => `
+            <div class="flex items-start space-x-3 text-sm bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-3">
+              <span class="h-5 w-5 text-emerald-500 shrink-0 mt-0.5">✓</span>
+              <span class="text-foreground/90 font-medium">${escapeHtml(formatValue(item))}</span>
+            </div>
+          `,
+        )
+        .join("");
+    }
 
-  <body class="dark">
-    <div id="root"></div>
-    <a href="./live-api-demo.html" class="api-demo-floating-link">即時模型推理 Demo</a>
-  </body>
+    function detailRows(data) {
+      const fields = [
+        ["釣魚機率", `${phishingPercent(data.phishing_probability)}%`],
+        ["寄件者網域", data.sender_domain],
+        ["信中 URL 網域", data.url_domains],
+        ["官方網域命中", data.matched_official_domains],
+        ["可信網域命中", data.matched_trusted_domains],
+        ["網域不一致", data.domain_mismatch],
+        ["個資風險", data.personal_data_risk],
+        ["付款風險", data.payment_risk],
+        ["後處理說明", data.postprocess_notes],
+      ];
+      return fields
+        .map(
+          ([label, value]) => `
+            <div class="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 py-2 border-b border-white/10 last:border-b-0">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider sm:w-32 shrink-0">${escapeHtml(label)}</span>
+              <span class="text-sm text-foreground/90 break-words">${escapeHtml(formatValue(value))}</span>
+            </div>
+          `,
+        )
+        .join("");
+    }
 
-</html>
+    function findAnalyzerSection() {
+      return document.getElementById("analyzer-section");
+    }
+
+    function findTextInputs(section) {
+      const textInputs = Array.from(section.querySelectorAll('input[type="text"]'));
+      return {
+        senderInput: document.getElementById("homeSenderInput") || textInputs[0],
+        subjectInput: document.getElementById("homeSubjectInput") || textInputs[1],
+        bodyInput: document.getElementById("homeBodyInput") || section.querySelector("textarea"),
+      };
+    }
+
+    function findResultColumn(section) {
+      return section.querySelector('.lg\\:col-span-7') || section.querySelector('[class*="lg:col-span-7"]');
+    }
+
+    function setAnalyzeButtonLoading(button, loading) {
+      if (!button) return;
+      button.disabled = loading;
+      button.dataset.renderApiLoading = loading ? "true" : "false";
+      button.innerHTML = loading
+        ? `<span class="h-4 w-4 animate-spin">⟳</span><span>AI 深度辨識中...</span>`
+        : `<span>開始 AI 分析</span><span aria-hidden="true">→</span>`;
+    }
+
+    function renderLoading(section) {
+      const resultColumn = findResultColumn(section);
+      if (!resultColumn) return;
+      resultColumn.innerHTML = `
+        <div class="border border-dashed border-white/10 rounded-2xl p-12 text-center bg-white/5 min-h-[400px] flex flex-col justify-center items-center">
+          <div class="h-12 w-12 rounded-full border-2 border-primary/30 border-t-primary animate-spin mb-5"></div>
+          <h3 class="text-lg font-bold text-foreground">模型分析中</h3>
+          <p class="text-sm text-muted-foreground mt-2 max-w-sm mx-auto">${LOADING_MESSAGE}</p>
+          <p class="text-xs text-muted-foreground mt-4 max-w-sm mx-auto break-words">API endpoint：${escapeHtml(getAnalyzeApiUrl())}</p>
+        </div>
+      `;
+    }
+
+    function renderError(section, message) {
+      const resultColumn = findResultColumn(section);
+      if (!resultColumn) return;
+      resultColumn.innerHTML = `
+        <div class="glass-panel rounded-2xl p-6 md:p-8 border border-destructive/30 space-y-4 animate-in fade-in duration-300">
+          <div class="text-destructive text-xs font-bold uppercase tracking-wider">API 呼叫失敗</div>
+          <h3 class="text-xl font-extrabold text-foreground">無法取得真實模型結果</h3>
+          <p class="text-sm text-foreground/90 leading-relaxed bg-destructive/10 border border-destructive/20 rounded-xl p-4">${escapeHtml(message)}</p>
+          <p class="text-xs text-muted-foreground break-words">目前 endpoint：${escapeHtml(getAnalyzeApiUrl())}</p>
+        </div>
+      `;
+    }
+
+    function renderApiResult(section, payload) {
+      const data = payload.result || payload;
+      const resultColumn = findResultColumn(section);
+      if (!resultColumn) return;
+      const level = riskLevelText(data);
+      const score = numericScore(data.risk_score);
+      const confidence = confidencePercent(data.confidence_score);
+      const phishing = phishingPercent(data.phishing_probability);
+      const icon = level === "危險" ? "!" : level === "可疑" ? "?" : "✓";
+      const iconClass = level === "危險"
+        ? "bg-destructive/10 text-destructive border border-destructive/20"
+        : level === "可疑"
+          ? "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+          : "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20";
+      const badgeClass = level === "危險"
+        ? "bg-destructive/20 text-destructive"
+        : level === "可疑"
+          ? "bg-amber-500/20 text-amber-500"
+          : "bg-emerald-500/20 text-emerald-500";
+      const barClass = score > 70 ? "bg-destructive" : score > 35 ? "bg-amber-500" : "bg-emerald-500";
+
+      resultColumn.innerHTML = `
+        <div class="glass-panel rounded-2xl p-6 md:p-8 border border-white/10 space-y-6 animate-in fade-in duration-300">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+            <div class="flex items-center space-x-4">
+              <div class="p-3 rounded-xl ${iconClass}"><span class="h-8 w-8 inline-flex items-center justify-center font-black text-2xl">${icon}</span></div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="text-xs font-bold uppercase tracking-wider text-muted-foreground">評估結果</span>
+                  <span class="text-xs font-bold px-2 py-0.5 rounded ${badgeClass}">${escapeHtml(level)}</span>
+                </div>
+                <h3 class="text-xl font-extrabold text-foreground mt-1">${escapeHtml(riskTitle(level))}</h3>
+                <p class="text-xs text-muted-foreground mt-1">資料來源：Render Flask API 真實模型回傳</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-6">
+              <div class="text-right">
+                <span class="text-xs text-muted-foreground block">風險分數</span>
+                <span class="text-2xl font-black text-foreground">${escapeHtml(formatValue(data.risk_score))}%</span>
+              </div>
+              <div class="text-right border-l border-white/10 pl-6">
+                <span class="text-xs text-muted-foreground block">判斷信心</span>
+                <span class="text-2xl font-black text-primary">${confidence}%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex justify-between text-xs text-muted-foreground"><span>安全 (0%)</span><span>高危 (100%)</span></div>
+            <div class="h-2.5 w-full bg-white/5 rounded-full overflow-hidden"><div class="h-full rounded-full transition-all duration-1000 ${barClass}" style="width: ${score}%"></div></div>
+            <div class="text-xs text-muted-foreground text-right">釣魚機率 phishing_probability：${phishing}%</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="space-y-2">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">可疑特徵</span>
+              <div class="flex flex-wrap gap-2">${pillList(data.indicators, "px-2.5 py-1 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-foreground")}</div>
+            </div>
+            <div class="space-y-2">
+              <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">詐騙話術</span>
+              <div class="flex flex-wrap gap-2">${pillList(data.manipulation_methods, "px-2.5 py-1 rounded-lg text-xs font-medium bg-destructive/10 border border-destructive/20 text-destructive")}</div>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">AI 白話風險解釋</span>
+            <p class="text-sm text-foreground/90 leading-relaxed bg-white/5 border border-white/5 rounded-xl p-4">${escapeHtml(data.explanation_for_general_users || "模型未提供補充說明。")}</p>
+          </div>
+
+          <div class="space-y-3 pt-2">
+            <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">安全行動建議</span>
+            <div class="space-y-2.5">${checklist(data.safe_actions)}</div>
+          </div>
+
+          <div class="space-y-2 pt-2">
+            <span class="text-xs font-bold text-muted-foreground uppercase tracking-wider block">模型與網域細節</span>
+            <div class="bg-white/5 border border-white/5 rounded-xl p-4">${detailRows(data)}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function analyzeWithRenderApi(button) {
+      const section = findAnalyzerSection();
+      if (!section) return;
+      const { senderInput, subjectInput, bodyInput } = findTextInputs(section);
+      const subject = subjectInput?.value || "";
+      const sender = senderInput?.value || "";
+      const body = bodyInput?.value || "";
+
+      if (!body.trim()) {
+        renderError(section, "請先輸入信件內容，再呼叫 Render 模型 API。 ");
+        return;
+      }
+
+      setAnalyzeButtonLoading(button, true);
+      renderLoading(section);
+
+      try {
+        const response = await fetch(getAnalyzeApiUrl(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subject, sender, body }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`API 回應錯誤：HTTP ${response.status}`);
+        }
+
+        const payload = await response.json();
+        renderApiResult(section, payload);
+      } catch (error) {
+        console.error(error);
+        renderError(section, CONNECTION_ERROR_MESSAGE);
+      } finally {
+        setAnalyzeButtonLoading(button, false);
+      }
+    }
+
+    function isHomeAnalyzeButton(target) {
+      const button = target.closest?.("button");
+      if (!button) return null;
+      const section = findAnalyzerSection();
+      if (!section || !section.contains(button)) return null;
+      if (button.textContent.includes("開始 AI 分析") || button.textContent.includes("AI 深度辨識中")) return button;
+      return null;
+    }
+
+    function enhanceAnalyzerDom() {
+      const section = findAnalyzerSection();
+      if (!section) return;
+      const { senderInput, subjectInput, bodyInput } = findTextInputs(section);
+      if (senderInput && !senderInput.id) senderInput.id = "homeSenderInput";
+      if (subjectInput && !subjectInput.id) subjectInput.id = "homeSubjectInput";
+      if (bodyInput && !bodyInput.id) bodyInput.id = "homeBodyInput";
+      const analyzeButton = Array.from(section.querySelectorAll("button")).find((button) => button.textContent.includes("開始 AI 分析"));
+      if (analyzeButton && !analyzeButton.id) analyzeButton.id = "homeAnalyzeBtn";
+      const heading = Array.from(section.querySelectorAll("h2")).find((node) => node.textContent.includes("輔助分析器"));
+      if (heading && !section.querySelector(".homepage-api-note")) {
+        heading.insertAdjacentHTML(
+          "afterend",
+          `<p class="homepage-api-note">此分析器已串接 Render 上的 Flask 後端與 TF-IDF + Logistic Regression 模型。</p>`,
+        );
+      }
+    }
+
+    document.addEventListener(
+      "click",
+      (event) => {
+        const button = isHomeAnalyzeButton(event.target);
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        analyzeWithRenderApi(button);
+      },
+      true,
+    );
+
+    const observer = new MutationObserver(enhanceAnalyzerDom);
+    observer.observe(document.documentElement, { childList: true, subtree: true });
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", enhanceAnalyzerDom);
+    } else {
+      enhanceAnalyzerDom();
+    }
+    window.homepageAnalyzeWithRenderApi = { getAnalyzeApiUrl, getApiBaseUrl };
+  })();
+</script>
+</body> </html>
